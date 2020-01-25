@@ -142,7 +142,6 @@ namespace VPNShield
                         }
 
                         sr.Close();
-                        Plugin.Debug("Returning True");
                         return true;
                     }
                 }
