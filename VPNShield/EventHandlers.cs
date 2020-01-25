@@ -29,7 +29,7 @@ namespace VPNShield
                 ServerConsole.Disconnect(ev.Player.characterClassManager.connectionToClient, Plugin.vpnKickMessage);
             }
 
-            //Else, let them continue. UwU
+            //Else, let them continue.
         }
     }
 }

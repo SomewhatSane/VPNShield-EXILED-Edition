@@ -8,34 +8,15 @@ namespace VPNShield
     public static class VPN
     {
         private static string appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-
         private static string exiledPath = Path.Combine(appData, "Plugins");
+
         public static bool CheckVPN(string ipAddress, string userID)
         {
 
-            if (Plugin.ipHubAPIKey == null)
-            {
-                return false; //Just add this incase someone has small brain and forgot to add an API Key.
-            }
-
-            //Check for Whitelisted UserID
-
-            if (WhitelistedUsersCheck(ipAddress, userID)) //Check to see if they are a Whitelisted user that bypasses the VPN check.
-            {
-                return false;
-            }
-
-            if (BlacklistedIPCheck(ipAddress, userID)) //See if the IP Address is already blacklisted.
-            {
-                return true;
-            }
-
-            if (WhitelistedIPCheck(ipAddress, userID)) //See if the IP Address is already whitelisted.
-            {
-                return false;
-            }
-
-
+            if (Plugin.ipHubAPIKey == null) { return false; } //Just add this incase someone has small brain and forgot to add an API Key.
+            if (WhitelistedUsersCheck(ipAddress, userID)) { return false; }
+            if (BlacklistedIPCheck(ipAddress, userID)) { return true; }
+            if (WhitelistedIPCheck(ipAddress, userID)) { return false; }
 
             HttpWebResponse response = null;
 
@@ -111,16 +92,16 @@ namespace VPNShield
         
         public static void WhitelistAdd(string ipAddress)
         {
-            using (StreamWriter whitelist = File.AppendText(exiledPath + "/VPNShield/VPNShield-WhitelistIPs.txt"))
+            using (StreamWriter whitelist = File.AppendText(exiledPath + "/VPNShield/VPNShield-WhitelistIPs.txt")) 
             {
-                whitelist.WriteLine(ipAddress + "\n");
+                whitelist.Write(ipAddress + "\n");
             }
         }
 
 
         public static void BlackListAdd(string ipAddress)
         {
-            using (StreamWriter blacklist = File.AppendText(exiledPath + "/VPNShield/VPNShield-BlacklistIPs.txt"))
+            using (StreamWriter blacklist = File.AppendText(exiledPath + "/VPNShield/VPNShield-BlacklistIPs.txt")) 
             {
                 blacklist.Write(ipAddress + "\n");
             }
