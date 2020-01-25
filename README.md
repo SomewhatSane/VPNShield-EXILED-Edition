@@ -1,4 +1,4 @@
-# VPNShield-EXILED-Edition
+# VPNShield EXILED Edition
 VPNShield EXILED Edition - A VPN Blocking Plugin for EXILED SCPSL servers.
 
 vs_apikey         | String    | IPHub API Key for VPN checking | Null<br>
