@@ -14,7 +14,7 @@ namespace VPNShield
 
         public override void OnEnable()
         {
-            Plugin.Info("VPNShield EXILED Edition V1.0 - By SomewhatSane. Last Modified: 2020/01/25 13:49 GMT.");
+            Plugin.Info("VPNShield EXILED Edition V1.0 by SomewhatSane. Last Modified: 2020/01/25 15:24 GMT.");
             Plugin.Info("Thanks to KarlOfDuty for the original SMod VPNShield!");
 
             Debug("VPNShield is starting up. Loading Configs.");
