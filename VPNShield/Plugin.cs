@@ -26,7 +26,7 @@ namespace VPNShield
 
             if (ipHubAPIKey == null)
             {
-                Plugin.Info("This plugin requires an API Key! Get one for free at https://iphub.info, and set it to vs_apiKey!");
+                Plugin.Info("This plugin requires an API Key! Get one for free at https://iphub.info, and set it to vs_apikey!");
             }
 
             Plugin.Info("Checking File System.");

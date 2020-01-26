@@ -21,7 +21,6 @@ namespace VPNShield
         public EventHandlers(Plugin plugin) => this.plugin = plugin;
 
         public void OnPlayerJoin(EXILED.PlayerJoinEvent ev)
-
         {
             
             if (VPN.CheckVPN(ev.Player.characterClassManager.connectionToClient.address, ev.Player.characterClassManager.UserId))

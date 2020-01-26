@@ -94,7 +94,7 @@ namespace VPNShield
         {
             using (StreamWriter whitelist = File.AppendText(exiledPath + "/VPNShield/VPNShield-WhitelistIPs.txt")) 
             {
-                whitelist.Write(ipAddress + "\n");
+                whitelist.WriteLine(ipAddress);
             }
         }
 
@@ -103,7 +103,7 @@ namespace VPNShield
         {
             using (StreamWriter blacklist = File.AppendText(exiledPath + "/VPNShield/VPNShield-BlacklistIPs.txt")) 
             {
-                blacklist.Write(ipAddress + "\n");
+                blacklist.WriteLine(ipAddress);
             }
         }
 
