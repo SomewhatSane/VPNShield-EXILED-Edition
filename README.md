@@ -12,4 +12,4 @@ vs_accountminage - String - Minimum age Steam account allowed on the server (in 
 vs_accountkickmessage - String - Kick message for Steam account too young - Default: Your account must be atleast X day(s) old to play on this server.
 <br>
 <br>
-User IDs can be added to 'VPNShield-WhitelistUserIDs.txt (1 each line) to bypass VPN and account checks for those players.
+User IDs can be added to 'VPNShield-WhitelistUserIDs.txt' (1 each line) to bypass VPN and account checks for those players.
