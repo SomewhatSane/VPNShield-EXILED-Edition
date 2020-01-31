@@ -34,7 +34,14 @@ namespace VPNShield
                 Plugin.Info(exiledPath + "/VPNShield/VPNShield-WhitelistUserIDs.txt does not exist. Creating.");
                 File.WriteAllText(exiledPath + "/VPNShield/VPNShield-WhitelistUserIDs.txt", null);
             }
-            Plugin.Info("File system setup check complete.");
+
+            if (!File.Exists(exiledPath + "/VPNShield/VPNShield-WhitelistAccountAgeCheck.txt"))
+            {
+                Plugin.Info(exiledPath + "/VPNShield/VPNShield-WhitelistAccountAgeCheck.txt does not exist. Creating.");
+                File.WriteAllText(exiledPath + "/VPNShield/VPNShield-WhitelistAccountAgeCheck.txt", null);
+            }
+
+            Plugin.Info("File system check complete.");
         }
     }
 }

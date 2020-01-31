@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Net;
+using System.Net.Http;
 using System.IO;
 using Newtonsoft.Json.Linq;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace VPNShield
 {
@@ -10,27 +13,35 @@ namespace VPNShield
         private static string appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         private static string exiledPath = Path.Combine(appData, "Plugins");
 
-        public static bool CheckVPN(string ipAddress, string userID)
+        public static async Task<bool> CheckVPN(string ipAddress, string userID)
         {
-
             if (Plugin.ipHubAPIKey == null) { return false; } //Just add this incase someone has small brain and forgot to add an API Key.
-            if (WhitelistedUsersCheck(ipAddress, userID)) { return false; }
+            if (GlobalWhitelist.GlobalWhitelistCheck(ipAddress, userID)) { return false; }
             if (BlacklistedIPCheck(ipAddress, userID)) { return true; }
             if (WhitelistedIPCheck(ipAddress, userID)) { return false; }
 
-            HttpWebResponse response = null;
-
-            try
+            using (HttpClient client = new HttpClient())
             {
-                HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create("https://v2.api.iphub.info/ip/" + ipAddress);
-                webRequest.Headers.Add("x-key", Plugin.ipHubAPIKey);
-                webRequest.Method = "GET";
+                client.DefaultRequestHeaders.Add("x-key", Plugin.ipHubAPIKey);
+                var webRequest = await client.GetAsync("https://v2.api.iphub.info/ip/" + ipAddress);
 
-                response = (HttpWebResponse)webRequest.GetResponse();
+                if (!webRequest.IsSuccessStatusCode)
+                {
+                    if (webRequest.StatusCode == (HttpStatusCode)429)
+                    {
+                        Plugin.Info("VPN check could not complete. You have reached your API key's limit.");
+                    }
 
-                string responseString = new StreamReader(response.GetResponseStream()).ReadToEnd();
-                JObject json = JObject.Parse(responseString);
+                    else
+                    {
+                        Plugin.Info("VPN API connection error: " + webRequest.StatusCode + " - " + webRequest.Content.ReadAsStringAsync());
+                    }
+                    return false;
+                }
 
+                string apiResponse = await webRequest.Content.ReadAsStringAsync();
+
+                JObject json = JObject.Parse(apiResponse);
                 int block = json.Value<int>("block");
 
                 if (block == 0 || block == 2) //2 is for unknown calls from the API. Strange.
@@ -48,45 +59,17 @@ namespace VPNShield
                 {
                     if (Plugin.verboseMode)
                     {
-                        Plugin.Info(ipAddress + " (" + userID + ") is a detectable VPN. Kicking.");
+                        Plugin.Info(ipAddress + " (" + userID + ") is a detectable VPN. Kicking..");
                     }
 
                     //Add to blacklist to prevent loads of calls!
                     BlackListAdd(ipAddress);
                     return true;
                 }
-
-
             }
+            
 
-            catch (WebException e)
-            {
-                if (e.Status == WebExceptionStatus.ProtocolError)
-                {
-                    response.Close();
-                    response = (HttpWebResponse)e.Response;
-
-                    if ((int)response.StatusCode == 429)
-                    {
-                        Plugin.Info("VPN check could not complete. You have reached your API key's limit.");
-                    }
-                    else
-                    {
-                        Plugin.Info("VPN connection error: " + response.StatusCode);
-                    }
-
-                }
-
-                else
-                {
-                    Plugin.Info("VPN API connection error: " + e.Status.ToString());
-                }
-            }
-
-            finally
-            {
-                response.Close();
-            }
+            
             return false;
         }
         
@@ -153,30 +136,6 @@ namespace VPNShield
 
             }
 
-            return false;
-        }
-
-        public static bool WhitelistedUsersCheck(string ipAddress, string userID)
-        {
-            string whitelistedUserIDsPath = exiledPath + "/VPNShield/VPNShield-WhitelistUserIDs.txt";
-            using (StreamReader sr = File.OpenText(whitelistedUserIDsPath))
-            {
-                string[] whitelistedUserIDs = File.ReadAllLines(whitelistedUserIDsPath);
-                for (int x = 0; x < whitelistedUserIDs.Length; x++)
-                {
-                    if (userID == whitelistedUserIDs[x])
-                    {
-                        if (Plugin.verboseMode)
-                        {
-                            Plugin.Info("UserID " + userID + " (" + ipAddress + ") is whitelisted from VPN checks. Bypassing checks.");
-                        }
-
-                        sr.Close();
-                        return true;
-                    }
-                }
-
-            }
             return false;
         }
     }

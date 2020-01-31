@@ -60,7 +60,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Account.cs" />
     <Compile Include="EventHandlers.cs" />
+    <Compile Include="GlobalWhitelist.cs" />
     <Compile Include="Setup.cs" />
     <Compile Include="VPN.cs" />
     <Compile Include="Plugin.cs" />

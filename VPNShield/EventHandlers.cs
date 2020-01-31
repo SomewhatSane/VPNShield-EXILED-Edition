@@ -22,10 +22,29 @@ namespace VPNShield
 
         public void OnPlayerJoin(EXILED.PlayerJoinEvent ev)
         {
-            
-            if (VPN.CheckVPN(ev.Player.characterClassManager.connectionToClient.address, ev.Player.characterClassManager.UserId))
+            Check(ev);
+        }
+
+        public async Task Check(EXILED.PlayerJoinEvent ev)
+        {
+            //Account check.
+            if (Plugin.accountCheck && Plugin.steamAPIKey != null)
             {
-                ServerConsole.Disconnect(ev.Player.characterClassManager.connectionToClient, Plugin.vpnKickMessage);
+                if (await Account.CheckAccount(ev.Player.characterClassManager.connectionToClient.address, ev.Player.characterClassManager.UserId))
+                {
+                    ServerConsole.Disconnect(ev.Player.characterClassManager.connectionToClient, Plugin.accountCheckKickMessage);
+                    return;
+                }
+            }
+
+            //VPN Check.
+            if (Plugin.vpnCheck && Plugin.ipHubAPIKey != null)
+            {
+                if (await VPN.CheckVPN(ev.Player.characterClassManager.connectionToClient.address, ev.Player.characterClassManager.UserId))
+                {
+                    ServerConsole.Disconnect(ev.Player.characterClassManager.connectionToClient, Plugin.vpnKickMessage);
+                    return;
+                }
             }
 
             //Else, let them continue.
