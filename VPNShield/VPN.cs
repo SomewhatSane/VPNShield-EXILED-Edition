@@ -13,7 +13,7 @@ namespace VPNShield
         private static string appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         private static string exiledPath = Path.Combine(appData, "Plugins");
 
-        public static async Task<bool> CheckVPN(string ipAddress, string userID)
+        public static async Task<bool> CheckVPN(string ipAddress, string userID) //A result of TRUE will kick.
         {
             if (Plugin.ipHubAPIKey == null) { return false; } //Just add this incase someone has small brain and forgot to add an API Key.
             if (GlobalWhitelist.GlobalWhitelistCheck(ipAddress, userID)) { return false; } //User's allowed to bypass both VPN and Account checks.
