@@ -16,9 +16,9 @@ namespace VPNShield
         public static async Task<bool> CheckVPN(string ipAddress, string userID)
         {
             if (Plugin.ipHubAPIKey == null) { return false; } //Just add this incase someone has small brain and forgot to add an API Key.
-            if (GlobalWhitelist.GlobalWhitelistCheck(ipAddress, userID)) { return false; }
-            if (BlacklistedIPCheck(ipAddress, userID)) { return true; }
-            if (WhitelistedIPCheck(ipAddress, userID)) { return false; }
+            if (GlobalWhitelist.GlobalWhitelistCheck(ipAddress, userID)) { return false; } //User's allowed to bypass both VPN and Account checks.
+            if (BlacklistedIPCheck(ipAddress, userID)) { return true; } //Known VPN IPs.
+            if (WhitelistedIPCheck(ipAddress, userID)) { return false; } //Known good IPs. Else..
 
             using (HttpClient client = new HttpClient())
             {
@@ -75,6 +75,7 @@ namespace VPNShield
         
         public static void WhitelistAdd(string ipAddress)
         {
+            Plugin.vpnWhitelistedIPs.Add(ipAddress);
             using (StreamWriter whitelist = File.AppendText(exiledPath + "/VPNShield/VPNShield-WhitelistIPs.txt")) 
             {
                 whitelist.WriteLine(ipAddress);
@@ -84,6 +85,7 @@ namespace VPNShield
 
         public static void BlackListAdd(string ipAddress)
         {
+            Plugin.vpnBlacklistedIPs.Add(ipAddress);
             using (StreamWriter blacklist = File.AppendText(exiledPath + "/VPNShield/VPNShield-BlacklistIPs.txt")) 
             {
                 blacklist.WriteLine(ipAddress);
@@ -92,50 +94,27 @@ namespace VPNShield
 
         public static bool WhitelistedIPCheck(string ipAddress, string userID)
         {
-            string whitelistedIPsPath = exiledPath + "/VPNShield/VPNShield-WhitelistIPs.txt";
-            using (StreamReader sr = File.OpenText(whitelistedIPsPath))
+            if (Plugin.vpnWhitelistedIPs.Contains(ipAddress))
             {
-                string[] whitelistedIPs = File.ReadAllLines(whitelistedIPsPath);
-                for (int x = 0; x < whitelistedIPs.Length; x++)
+                if (Plugin.verboseMode)
                 {
-                    if (ipAddress == whitelistedIPs[x])
-                    {
-                        if (Plugin.verboseMode)
-                        {
-                            Plugin.Info(ipAddress + " (" + userID + ") has already passed a VPN check / is whitelisted.");
-                        }
-
-                        sr.Close();
-                        return true;
-                    }
+                    Plugin.Info(ipAddress + " (" + userID + ") has already passed a VPN check / is whitelisted.");
                 }
-
+                return true;
             }
             return false;
         }
 
         public static bool BlacklistedIPCheck(string ipAddress, string userID)
         {
-            string blacklistedIPsPath = exiledPath + "/VPNShield/VPNShield-BlacklistIPs.txt";
-            using (StreamReader sr = File.OpenText(blacklistedIPsPath))
+            if (Plugin.vpnBlacklistedIPs.Contains(ipAddress))
             {
-                string[] blacklistedIPs = File.ReadAllLines(blacklistedIPsPath);
-                for (int x = 0; x < blacklistedIPs.Length; x++)
+                if (Plugin.verboseMode)
                 {
-                    if (ipAddress == blacklistedIPs[x])
-                    {
-                        if (Plugin.verboseMode)
-                        {
-                            Plugin.Info(ipAddress + " (" + userID + ") is already known as a VPN / is blacklisted. Kicking.");
-                        }
-
-                        sr.Close();
-                        return true;
-                    }
+                    Plugin.Info(ipAddress + " (" + userID + ") is already known as a VPN / is blacklisted. Kicking.");
                 }
-
+                return true;
             }
-
             return false;
         }
     }

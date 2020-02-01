@@ -22,3 +22,15 @@ Z:\Projects\EXILED Plugins\VPNShield\v1.1\VPNShield\obj\Debug\VPNShield.csprojAs
 Z:\Projects\EXILED Plugins\VPNShield\v1.1\VPNShield\obj\Debug\VPNShield.csproj.CopyComplete
 Z:\Projects\EXILED Plugins\VPNShield\v1.1\VPNShield\obj\Debug\VPNShield.dll
 Z:\Projects\EXILED Plugins\VPNShield\v1.1\VPNShield\obj\Debug\VPNShield.pdb
+Z:\Projects\EXILED Plugins\VPNShield\v1.2\VPNShield\obj\Debug\VPNShield.csprojAssemblyReference.cache
+Z:\Projects\EXILED Plugins\VPNShield\v1.2\VPNShield\obj\Debug\VPNShield.dll
+Z:\Projects\EXILED Plugins\VPNShield\v1.2\VPNShield\obj\Debug\VPNShield.pdb
+Z:\Projects\EXILED Plugins\VPNShield\v1.2\VPNShield\bin\Debug\VPNShield.dll
+Z:\Projects\EXILED Plugins\VPNShield\v1.2\VPNShield\bin\Debug\VPNShield.pdb
+Z:\Projects\EXILED Plugins\VPNShield\v1.2\VPNShield\bin\Debug\Assembly-CSharp.dll
+Z:\Projects\EXILED Plugins\VPNShield\v1.2\VPNShield\bin\Debug\EXILED.dll
+Z:\Projects\EXILED Plugins\VPNShield\v1.2\VPNShield\bin\Debug\EXILED_Events.dll
+Z:\Projects\EXILED Plugins\VPNShield\v1.2\VPNShield\bin\Debug\Mirror.dll
+Z:\Projects\EXILED Plugins\VPNShield\v1.2\VPNShield\bin\Debug\Newtonsoft.Json.dll
+Z:\Projects\EXILED Plugins\VPNShield\v1.2\VPNShield\bin\Debug\UnityEngine.CoreModule.dll
+Z:\Projects\EXILED Plugins\VPNShield\v1.2\VPNShield\obj\Debug\VPNShield.csproj.CopyComplete

@@ -14,24 +14,15 @@ namespace VPNShield
         private static string exiledPath = Path.Combine(appData, "Plugins");
         public static bool GlobalWhitelistCheck(string ipAddress, string userID)
         {
-            string GlobalWL = exiledPath + "/VPNShield/VPNShield-WhitelistUserIDs.txt";
-            using (StreamReader sr = File.OpenText(GlobalWL))
+            if (Plugin.checksWhitelistedUserIDs.Contains(userID))
             {
-                string[] whitelistedUsers = File.ReadAllLines(GlobalWL);
-                for (int x = 0; x < whitelistedUsers.Length; x++)
+                if (Plugin.verboseMode)
                 {
-                    if (userID == whitelistedUsers[x])
-                    {
-                        if (Plugin.verboseMode)
-                        {
-                            Plugin.Info("UserID " + userID + " (" + ipAddress + ") whitelisted from VPN and account age checks. Skipping checks.");
-                        }
-
-                        sr.Close();
-                        return true;
-                    }
+                    Plugin.Info("UserID " + userID + " (" + ipAddress + ") is whitelisted from VPN and account age checks. Skipping checks.");
                 }
+                return true;
             }
+
             return false;
         }
     }

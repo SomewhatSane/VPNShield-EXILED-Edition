@@ -17,7 +17,7 @@ namespace VPNShield
         private static string exiledPath = Path.Combine(appData, "Plugins");
         public static async Task<bool> CheckAccount(string ipAddress, string userID)
         {
-            if (GlobalWhitelist.GlobalWhitelistCheck(ipAddress, userID)) { return false; }
+            if (GlobalWhitelist.GlobalWhitelistCheck(ipAddress, userID)) { return false; } //Check for globally whitelisted accounts.
             if (CheckWhitelist(ipAddress, userID)) { return false; } //Check for all ready known accounts.
 
             if (userID.EndsWith("@steam"))
@@ -47,8 +47,7 @@ namespace VPNShield
                     DateTime creationDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0);
                     creationDateTime = creationDateTime.AddSeconds(timecreated);
 
-                    DateTime currentDate = DateTime.Today;
-                    int accountAge = (int)(currentDate - creationDateTime).TotalDays;
+                    int accountAge = (int)(DateTime.Today - creationDateTime).TotalDays;
 
                     if (accountAge < Plugin.minimumAccountAge)
                     {
@@ -85,29 +84,21 @@ namespace VPNShield
 
         public static bool CheckWhitelist(string ipAddress, string userID)
         {
-            string whitelistedAccounts = exiledPath + "/VPNShield/VPNShield-WhitelistAccountAgeCheck.txt";
-            using (StreamReader sr = File.OpenText(whitelistedAccounts))
+            if (Plugin.accountWhitelistedUserIDs.Contains(userID))
             {
-                string[] whitelistedUsers = File.ReadAllLines(whitelistedAccounts);
-                for (int x = 0; x < whitelistedUsers.Length; x++)
+                if (Plugin.verboseMode)
                 {
-                    if (userID == whitelistedUsers[x])
-                    {
-                        if (Plugin.verboseMode)
-                        {
-                            Plugin.Info("UserID " + userID + " (" + ipAddress + ") is already known to be old enough. Skipping account age check.");
-                        }
-
-                        sr.Close();
-                        return true;
-                    }
+                    Plugin.Info("UserID " + userID + " (" + ipAddress + ") is already known to be old enough. Skipping account age check.");
                 }
+
+                return true;
             }
             return false;
         }
 
         public static void WhitelistAdd(string userID)
         {
+            Plugin.accountWhitelistedUserIDs.Add(userID);
             using (StreamWriter whitelist = File.AppendText(exiledPath + "/VPNShield/VPNShield-WhitelistAccountAgeCheck.txt"))
             {
                 whitelist.WriteLine(userID);
