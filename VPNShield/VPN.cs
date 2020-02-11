@@ -5,6 +5,7 @@ using System.IO;
 using Newtonsoft.Json.Linq;
 using System.Threading.Tasks;
 using System.Threading;
+using EXILED;
 
 namespace VPNShield
 {
@@ -29,12 +30,12 @@ namespace VPNShield
                 {
                     if (webRequest.StatusCode == (HttpStatusCode)429)
                     {
-                        Plugin.Info("VPN check could not complete. You have reached your API key's limit.");
+                        Log.Error("VPN check could not complete. You have reached your API key's limit.");
                     }
 
                     else
                     {
-                        Plugin.Info("VPN API connection error: " + webRequest.StatusCode + " - " + webRequest.Content.ReadAsStringAsync());
+                        Log.Error("VPN API connection error: " + webRequest.StatusCode + " - " + webRequest.Content.ReadAsStringAsync());
                     }
                     return false;
                 }
@@ -48,7 +49,7 @@ namespace VPNShield
                 {
                     if (Plugin.verboseMode)
                     {
-                        Plugin.Info(ipAddress + " (" + userID + ") is not a detectable VPN.");
+                        Log.Info(ipAddress + " (" + userID + ") is not a detectable VPN.");
                     }
                     //Add to whitelist here!!
                     WhitelistAdd(ipAddress);
@@ -59,7 +60,7 @@ namespace VPNShield
                 {
                     if (Plugin.verboseMode)
                     {
-                        Plugin.Info(ipAddress + " (" + userID + ") is a detectable VPN. Kicking..");
+                        Log.Info(ipAddress + " (" + userID + ") is a detectable VPN. Kicking..");
                     }
 
                     //Add to blacklist to prevent loads of calls!
@@ -98,7 +99,7 @@ namespace VPNShield
             {
                 if (Plugin.verboseMode)
                 {
-                    Plugin.Info(ipAddress + " (" + userID + ") has already passed a VPN check / is whitelisted.");
+                    Log.Info(ipAddress + " (" + userID + ") has already passed a VPN check / is whitelisted.");
                 }
                 return true;
             }
@@ -111,7 +112,7 @@ namespace VPNShield
             {
                 if (Plugin.verboseMode)
                 {
-                    Plugin.Info(ipAddress + " (" + userID + ") is already known as a VPN / is blacklisted. Kicking.");
+                    Log.Info(ipAddress + " (" + userID + ") is already known as a VPN / is blacklisted. Kicking.");
                 }
                 return true;
             }

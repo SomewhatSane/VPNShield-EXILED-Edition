@@ -8,6 +8,7 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using Newtonsoft.Json.Linq;
+using EXILED;
 
 namespace VPNShield
 {
@@ -29,12 +30,12 @@ namespace VPNShield
                     {
                         if (webRequest.StatusCode == (HttpStatusCode)429)
                         {
-                            Plugin.Info("Steam account check could not complete. You have reached your API key's limit.");
+                            Log.Error("Steam account check could not complete. You have reached your API key's limit.");
                         }
 
                         else
                         {
-                            Plugin.Info("Steam API connection error: " + webRequest.StatusCode + " - " + webRequest.Content.ReadAsStringAsync());
+                            Log.Error("Steam API connection error: " + webRequest.StatusCode + " - " + webRequest.Content.ReadAsStringAsync());
                         }
                         return false;
                     }
@@ -53,7 +54,7 @@ namespace VPNShield
                     {
                         if (Plugin.verboseMode)
                         {
-                            Plugin.Info("UserID " + userID + " (" + ipAddress + ") is too young to be on this server. (Account is " + accountAge + " day(s) old). Kicking..");
+                            Log.Info("UserID " + userID + " (" + ipAddress + ") is too young to be on this server (Account is " + accountAge + " day(s) old). Kicking..");
                         }
                         return true;
                     }
@@ -62,7 +63,7 @@ namespace VPNShield
                     {
                         if (Plugin.verboseMode)
                         {
-                            Plugin.Info("UserID " + userID + " (" + ipAddress + ") is old enough to be on this server. (Account is " + accountAge + " day(s) old).");
+                            Log.Info("UserID " + userID + " (" + ipAddress + ") is old enough to be on this server (Account is " + accountAge + " day(s) old).");
                         }
                         WhitelistAdd(userID);
                         return false;
@@ -73,7 +74,7 @@ namespace VPNShield
 
             else if (userID.EndsWith("@discord"))
             {
-                return false; //Add this later!!
+                return false; //At this current time, no check should be needed, as SCPSLs central server kicks anyone using Discord and a VPN. Add this later if needed.
             }
 
             else
@@ -88,7 +89,7 @@ namespace VPNShield
             {
                 if (Plugin.verboseMode)
                 {
-                    Plugin.Info("UserID " + userID + " (" + ipAddress + ") is already known to be old enough. Skipping account age check.");
+                    Log.Info("UserID " + userID + " (" + ipAddress + ") is already known to be old enough. Skipping account age check.");
                 }
 
                 return true;

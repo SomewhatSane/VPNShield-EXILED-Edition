@@ -27,6 +27,7 @@ namespace VPNShield
         {
             if (ev.Command.ToUpper() == "VS_RELOAD")
             {
+                ev.Allow = false;
                 ev.Sender.RaReply("Reloading VPNShield.", true, true, null);
                 Plugin.accountCheck = Plugin.Config.GetBool("vs_accountcheck", false);
                 Plugin.steamAPIKey = Plugin.Config.GetString("vs_steamapikey", null);
@@ -38,6 +39,7 @@ namespace VPNShield
                 Plugin.vpnKickMessage = Plugin.Config.GetString("vs_vpnkickmessage", "VPNs and proxies are forbidden on this server.");
 
                 Plugin.verboseMode = Plugin.Config.GetBool("vs_verbose", false);
+                Plugin.updateChecker = Plugin.Config.GetBool("vs_checkforupdates", true);
 
                 Plugin.vpnWhitelistedIPs = null;
                 Plugin.vpnBlacklistedIPs = null;
@@ -55,7 +57,7 @@ namespace VPNShield
 
         public void OnPlayerJoin(EXILED.PlayerJoinEvent ev)
         {
-            Check(ev);
+            _ = Check(ev);
         }
 
         public async Task Check(EXILED.PlayerJoinEvent ev)

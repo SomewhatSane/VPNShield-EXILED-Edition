@@ -27,12 +27,15 @@ namespace VPNShield
         public static string vpnKickMessage;
 
         public static bool verboseMode;
+        public static bool updateChecker;
+
+        public static string version = "1.2.1";
 
         public override void OnEnable()
         {
-            Plugin.Info("VPNShield EXILED Edition V1.2 by SomewhatSane. Last Modified: 2020/02/01 13:35 GMT.");
-            Plugin.Info("Thanks to KarlOfDuty for the original SMod VPNShield!");
-            Plugin.Info("Loading Configs.");
+            Log.Info("VPNShield EXILED Edition v" + version + " by SomewhatSane. Last Modified: 2020/02/11 21:26 GMT.");
+            Log.Info("Thanks to KarlOfDuty for the original SMod VPNShield!");
+            Log.Info("Loading Configs.");
 
 
             accountCheck = Plugin.Config.GetBool("vs_accountcheck", false);
@@ -45,27 +48,30 @@ namespace VPNShield
             vpnKickMessage = Plugin.Config.GetString("vs_vpnkickmessage", "VPNs and proxies are forbidden on this server.");
 
             verboseMode = Plugin.Config.GetBool("vs_verbose", false);
+            updateChecker = Plugin.Config.GetBool("vs_checkforupdates", true);
 
-            if (verboseMode) { Plugin.Info("Verbose mode is enabled."); }
-            if (accountCheck && steamAPIKey == null) { Plugin.Info("This plugin requires a Steam API Key! Get one for free at https://steamcommunity.com/dev/apikey, and set it to vs_steamapikey!"); }
-            if (vpnCheck && ipHubAPIKey == null) { Plugin.Info("This plugin requires an VPN API Key! Get one for free at https://iphub.info, and set it to vs_vpnapikey!"); }
+            if (verboseMode) { Log.Info("Verbose mode is enabled."); }
+            if (accountCheck && steamAPIKey == null) { Log.Info("This plugin requires a Steam API Key! Get one for free at https://steamcommunity.com/dev/apikey, and set it to vs_steamapikey!"); }
+            if (vpnCheck && ipHubAPIKey == null) { Log.Info("This plugin requires a VPN API Key! Get one for free at https://iphub.info, and set it to vs_vpnapikey!"); }
 
-            Plugin.Info("Checking File System.");
+            _ = UpdateCheck.CheckForUpdate();
+
+            Log.Info("Checking File System.");
             Setup.CheckFileSystem();
 
-            Plugin.Info("Loading data.");
+            Log.Info("Loading data.");
 
             vpnWhitelistedIPs = new HashSet<string>(FileManager.ReadAllLines(exiledPath + "/VPNShield/VPNShield-WhitelistIPs.txt")); //Known IPs that are not VPNs.
             vpnBlacklistedIPs = new HashSet<string>(FileManager.ReadAllLines(exiledPath + "/VPNShield/VPNShield-BlacklistIPs.txt")); //Known IPs that ARE VPNs.
             accountWhitelistedUserIDs = new HashSet<string>(FileManager.ReadAllLines(exiledPath + "/VPNShield/VPNShield-WhitelistAccountAgeCheck.txt")); //Known UserIDs that ARE old enough.
             checksWhitelistedUserIDs = new HashSet<string>(FileManager.ReadAllLines(exiledPath + "/VPNShield/VPNShield-WhitelistUserIDs.txt")); //UserIDs that can bypass VPN AND account checks.
 
-            Plugin.Info("Loading Event Handlers.");
+            Log.Info("Loading Event Handlers.");
             EventHandlers = new EventHandlers(this);
             Events.PlayerJoinEvent += EventHandlers.OnPlayerJoin;
             Events.RemoteAdminCommandEvent += EventHandlers.OnRACommand;
 
-            Plugin.Info("Done.");
+            Log.Info("Done.");
             
         }
 
@@ -73,7 +79,7 @@ namespace VPNShield
         {
             Events.PlayerJoinEvent -= EventHandlers.OnPlayerJoin;
             EventHandlers = null;
-            Plugin.Info("Disabled.");
+            Log.Info("Disabled.");
         }
 
         public override void OnReload() { }
