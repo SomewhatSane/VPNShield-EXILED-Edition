@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using EXILED;
 
 namespace VPNShield
 {
@@ -13,35 +15,67 @@ namespace VPNShield
         {
             if (!Directory.Exists(exiledPath + "/VPNShield"))
             {
-                Plugin.Info(exiledPath + "/VPNShield directory does not exist. Creating.");
+                Log.Warn(exiledPath + "/VPNShield directory does not exist. Creating.");
                 Directory.CreateDirectory(exiledPath + "/VPNShield");
             }
 
             if (!File.Exists(exiledPath + "/VPNShield/VPNShield-WhitelistIPs.txt"))
             {
-                Plugin.Info(exiledPath + "/VPNShield/VPNShield-WhitelistIPs.txt does not exist. Creating.");
+                Log.Warn(exiledPath + "/VPNShield/VPNShield-WhitelistIPs.txt does not exist. Creating.");
                 File.WriteAllText(exiledPath + "/VPNShield/VPNShield-WhitelistIPs.txt", null);
             }
 
             if (!File.Exists(exiledPath + "/VPNShield/VPNShield-BlacklistIPs.txt"))
             {
-                Plugin.Info(exiledPath + "/VPNShield/VPNShield-BlacklistIPs.txt does not exist. Creating.");
+                Log.Warn(exiledPath + "/VPNShield/VPNShield-BlacklistIPs.txt does not exist. Creating.");
                 File.WriteAllText(exiledPath + "/VPNShield/VPNShield-BlacklistIPs.txt", null);
             }
 
             if (!File.Exists(exiledPath + "/VPNShield/VPNShield-WhitelistUserIDs.txt"))
             {
-                Plugin.Info(exiledPath + "/VPNShield/VPNShield-WhitelistUserIDs.txt does not exist. Creating.");
+                Log.Warn(exiledPath + "/VPNShield/VPNShield-WhitelistUserIDs.txt does not exist. Creating.");
                 File.WriteAllText(exiledPath + "/VPNShield/VPNShield-WhitelistUserIDs.txt", null);
             }
 
             if (!File.Exists(exiledPath + "/VPNShield/VPNShield-WhitelistAccountAgeCheck.txt"))
             {
-                Plugin.Info(exiledPath + "/VPNShield/VPNShield-WhitelistAccountAgeCheck.txt does not exist. Creating.");
+                Log.Warn(exiledPath + "/VPNShield/VPNShield-WhitelistAccountAgeCheck.txt does not exist. Creating.");
                 File.WriteAllText(exiledPath + "/VPNShield/VPNShield-WhitelistAccountAgeCheck.txt", null);
             }
 
-            Plugin.Info("File system check complete.");
+            Log.Info("File system check complete.");
+        }
+
+        public static void ReloadConfig()
+        {
+            Plugin.accountCheck = Plugin.Config.GetBool("vs_accountcheck", false);
+            Plugin.steamAPIKey = Plugin.Config.GetString("vs_steamapikey", null);
+            Plugin.minimumAccountAge = Plugin.Config.GetInt("vs_accountminage", 14);
+            Plugin.accountCheckKickMessage = Plugin.Config.GetString("vs_accountkickmessage", "Your account must be at least " + Plugin.minimumAccountAge.ToString() + " day(s) old to play on this server.");
+
+            Plugin.vpnCheck = Plugin.Config.GetBool("vs_vpncheck", true);
+            Plugin.ipHubAPIKey = Plugin.Config.GetString("vs_vpnapikey", null);
+            Plugin.vpnKickMessage = Plugin.Config.GetString("vs_vpnkickmessage", "VPNs and proxies are forbidden on this server.");
+
+            Plugin.verboseMode = Plugin.Config.GetBool("vs_verbose", false);
+            Plugin.updateChecker = Plugin.Config.GetBool("vs_checkforupdates", true);
+
+            if (Plugin.verboseMode) { Log.Info("Verbose mode is enabled."); }
+            if (Plugin.accountCheck && Plugin.steamAPIKey == null) { Log.Info("This plugin requires a Steam API Key! Get one for free at https://steamcommunity.com/dev/apikey, and set it to vs_steamapikey!"); }
+            if (Plugin.vpnCheck && Plugin.ipHubAPIKey == null) { Log.Info("This plugin requires a VPN API Key! Get one for free at https://iphub.info, and set it to vs_vpnapikey!"); }
+        }
+
+        public static void LoadData()
+        {
+            Plugin.vpnWhitelistedIPs = null;
+            Plugin.vpnBlacklistedIPs = null;
+            Plugin.accountWhitelistedUserIDs = null;
+            Plugin.checksWhitelistedUserIDs = null;
+
+            Plugin.vpnWhitelistedIPs = new HashSet<string>(FileManager.ReadAllLines(exiledPath + "/VPNShield/VPNShield-WhitelistIPs.txt")); //Known IPs that are not VPNs.
+            Plugin.vpnBlacklistedIPs = new HashSet<string>(FileManager.ReadAllLines(exiledPath + "/VPNShield/VPNShield-BlacklistIPs.txt")); //Known IPs that ARE VPNs.
+            Plugin.accountWhitelistedUserIDs = new HashSet<string>(FileManager.ReadAllLines(exiledPath + "/VPNShield/VPNShield-WhitelistAccountAgeCheck.txt")); //Known UserIDs that ARE old enough.
+            Plugin.checksWhitelistedUserIDs = new HashSet<string>(FileManager.ReadAllLines(exiledPath + "/VPNShield/VPNShield-WhitelistUserIDs.txt")); //UserIDs that can bypass VPN AND account checks.
         }
     }
 }

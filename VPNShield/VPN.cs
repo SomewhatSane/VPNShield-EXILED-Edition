@@ -16,8 +16,6 @@ namespace VPNShield
 
         public static async Task<bool> CheckVPN(string ipAddress, string userID) //A result of TRUE will kick.
         {
-            if (Plugin.ipHubAPIKey == null) { return false; } //Just add this incase someone has small brain and forgot to add an API Key.
-            if (GlobalWhitelist.GlobalWhitelistCheck(ipAddress, userID)) { return false; } //User's allowed to bypass both VPN and Account checks.
             if (BlacklistedIPCheck(ipAddress, userID)) { return true; } //Known VPN IPs.
             if (WhitelistedIPCheck(ipAddress, userID)) { return false; } //Known good IPs. Else..
 

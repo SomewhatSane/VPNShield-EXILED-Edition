@@ -22,7 +22,7 @@ namespace VPNShield
             using (HttpClient client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Add("User-Agent", "VPNShield Update Checker - Running VPNShield v" + Plugin.version);
-                HttpResponseMessage response = await client.GetAsync("http://scpsl.somewhatsane.co.uk/plugins/vpnshield/latest.html");
+                HttpResponseMessage response = await client.GetAsync("http://www.somewhatsane.co.uk/plugins/vpnshield/latest.html");
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -48,7 +48,7 @@ namespace VPNShield
                 }
                 else
                 {
-                    Log.Error("An error occurred when trying to check for updates. Response from server: " + data);
+                    Log.Error("Unexpected reply from server when trying to check for updates. Response from server: " + data);
                 }
             }
         }

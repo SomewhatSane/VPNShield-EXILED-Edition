@@ -18,9 +18,7 @@ namespace VPNShield
         private static string exiledPath = Path.Combine(appData, "Plugins");
         public static async Task<bool> CheckAccount(string ipAddress, string userID) //A result of TRUE will kick.
         {
-            if (GlobalWhitelist.GlobalWhitelistCheck(ipAddress, userID)) { return false; } //Check for globally whitelisted accounts.
             if (CheckWhitelist(ipAddress, userID)) { return false; } //Check for all ready known accounts.
-
             if (userID.EndsWith("@steam"))
             {
                 using (HttpClient client = new HttpClient())
