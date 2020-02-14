@@ -36,10 +36,10 @@ namespace VPNShield
             Log.Info("VPNShield EXILED Edition v" + version + " by SomewhatSane. Last Modified: 2020/02/14 17:03 GMT.");
             Log.Info("Thanks to KarlOfDuty for the original SMod VPNShield!");
 
-            Log.Info("Loading Configs.");
+            Log.Info("Loading configs.");
             Setup.ReloadConfig();
             _ = UpdateCheck.CheckForUpdate();
-            Log.Info("Checking File System.");
+            Log.Info("Checking file system.");
             Setup.CheckFileSystem();
             Log.Info("Loading data.");
             Setup.LoadData();
