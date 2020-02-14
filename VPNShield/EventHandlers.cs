@@ -29,7 +29,6 @@ namespace VPNShield
             if (ev.Command.ToUpper() == "VS_RELOAD")
             {
                 ev.Allow = false;
-                Log.Info("Reloading VPNShield.");
                 Setup.ReloadConfig();
                 Setup.LoadData();
                 ev.Sender.RAMessage("Reloaded VPNShield.");
