@@ -20,9 +20,6 @@ namespace VPNShield
     {
         public Plugin plugin;
         public EventHandlers(Plugin plugin) => this.plugin = plugin;
-        private static string appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-        private static string exiledPath = Path.Combine(appData, "Plugins");
-
 
         public void OnRACommand(ref EXILED.RACommandEvent ev)
         {
@@ -43,8 +40,17 @@ namespace VPNShield
 
         public async Task Check(EXILED.PlayerJoinEvent ev)
         {
+            if (ev.Player.serverRoles.Staff)
+            {
+                if (Plugin.verboseMode)
+                {
+                    Log.Info("UserID " + ev.Player.characterClassManager.UserId + " (" + ev.Player.characterClassManager.connectionToClient.address + ") is a global SCPSL Staff Member. Bypassing..");
+                }
+                return; //Global staff. Bypass checks.
+            }
+            
             if (GlobalWhitelist.GlobalWhitelistCheck(ev.Player.characterClassManager.connectionToClient.address, ev.Player.characterClassManager.UserId)) //Check for globally whitelisted accounts.
-            { 
+            {
                 return; //Quit all other checks. They are whitelisted.
             } 
 

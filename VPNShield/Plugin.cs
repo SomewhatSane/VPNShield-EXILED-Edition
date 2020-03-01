@@ -7,8 +7,7 @@ namespace VPNShield
 {
     public class Plugin : EXILED.Plugin
     {
-        private static string appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-        private static string exiledPath = Path.Combine(appData, "Plugins");
+        public static string exiledPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Plugins");
 
         public EventHandlers EventHandlers;
 
@@ -29,11 +28,11 @@ namespace VPNShield
         public static bool verboseMode;
         public static bool updateChecker;
 
-        public static string version = "1.2.2";
+        public static string version = "1.2.3";
 
         public override void OnEnable()
         {
-            Log.Info("VPNShield EXILED Edition v" + version + " by SomewhatSane. Last Modified: 2020/02/14 17:03 GMT.");
+            Log.Info("VPNShield EXILED Edition v" + version + " by SomewhatSane. Last Modified: 2020/03/01 20:15 GMT.");
             Log.Info("Thanks to KarlOfDuty for the original SMod VPNShield!");
 
             Log.Info("Loading configs.");

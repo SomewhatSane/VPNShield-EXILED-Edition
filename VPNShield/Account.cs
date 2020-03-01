@@ -14,8 +14,6 @@ namespace VPNShield
 {
     public class Account
     {
-        private static string appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-        private static string exiledPath = Path.Combine(appData, "Plugins");
         public static async Task<bool> CheckAccount(string ipAddress, string userID) //A result of TRUE will kick.
         {
             if (CheckWhitelist(ipAddress, userID)) { return false; } //Check for all ready known accounts.
@@ -98,7 +96,7 @@ namespace VPNShield
         public static void WhitelistAdd(string userID)
         {
             Plugin.accountWhitelistedUserIDs.Add(userID);
-            using (StreamWriter whitelist = File.AppendText(exiledPath + "/VPNShield/VPNShield-WhitelistAccountAgeCheck.txt"))
+            using (StreamWriter whitelist = File.AppendText(Plugin.exiledPath + "/VPNShield/VPNShield-WhitelistAccountAgeCheck.txt"))
             {
                 whitelist.WriteLine(userID);
             }

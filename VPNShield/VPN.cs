@@ -11,9 +11,6 @@ namespace VPNShield
 {
     public static class VPN
     {
-        private static string appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-        private static string exiledPath = Path.Combine(appData, "Plugins");
-
         public static async Task<bool> CheckVPN(string ipAddress, string userID) //A result of TRUE will kick.
         {
             if (BlacklistedIPCheck(ipAddress, userID)) { return true; } //Known VPN IPs.
@@ -75,7 +72,7 @@ namespace VPNShield
         public static void WhitelistAdd(string ipAddress)
         {
             Plugin.vpnWhitelistedIPs.Add(ipAddress);
-            using (StreamWriter whitelist = File.AppendText(exiledPath + "/VPNShield/VPNShield-WhitelistIPs.txt")) 
+            using (StreamWriter whitelist = File.AppendText(Plugin.exiledPath + "/VPNShield/VPNShield-WhitelistIPs.txt")) 
             {
                 whitelist.WriteLine(ipAddress);
             }
@@ -85,7 +82,7 @@ namespace VPNShield
         public static void BlackListAdd(string ipAddress)
         {
             Plugin.vpnBlacklistedIPs.Add(ipAddress);
-            using (StreamWriter blacklist = File.AppendText(exiledPath + "/VPNShield/VPNShield-BlacklistIPs.txt")) 
+            using (StreamWriter blacklist = File.AppendText(Plugin.exiledPath + "/VPNShield/VPNShield-BlacklistIPs.txt")) 
             {
                 blacklist.WriteLine(ipAddress);
             }
