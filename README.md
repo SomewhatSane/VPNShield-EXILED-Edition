@@ -15,4 +15,9 @@ vs_verbose - Boolean - Verbose mode - Default: false<br>
 vs_checkforupdates - Boolean - Enable checking for updates on server start - Default: true<br>
 <br>
 <br>
+Commands
+<br>
+vs_reload - Reloads VPNShield configuration and whitelist (This is also done at WaitingForPlayers automatically)
+<br>
+<br>
 User IDs can be added to 'VPNShield-WhitelistUserIDs.txt' (eg. '76561198123456789@steam' - 1 each line) to bypass VPN and account checks for those players.
