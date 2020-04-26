@@ -88,3 +88,17 @@ Z:/Projects/EXILED Plugins/VPNShield/v1.2.2/VPNShield/obj/Debug/VPNShield.pdb
 /media/sean/Data01/Projects/VPNShield/v1.2.3/VPNShield/obj/Debug/VPNShield.csproj.CopyComplete
 /media/sean/Data01/Projects/VPNShield/v1.2.3/VPNShield/obj/Debug/VPNShield.dll
 /media/sean/Data01/Projects/VPNShield/v1.2.3/VPNShield/obj/Debug/VPNShield.pdb
+/home/sean/Desktop/v1.2.3/VPNShield/bin/Debug/VPNShield.dll
+/home/sean/Desktop/v1.2.3/VPNShield/bin/Debug/VPNShield.pdb
+/home/sean/Desktop/v1.2.3/VPNShield/bin/Debug/Assembly-CSharp.dll
+/home/sean/Desktop/v1.2.3/VPNShield/bin/Debug/EXILED.dll
+/home/sean/Desktop/v1.2.3/VPNShield/bin/Debug/EXILED_Events.dll
+/home/sean/Desktop/v1.2.3/VPNShield/bin/Debug/Mirror.dll
+/home/sean/Desktop/v1.2.3/VPNShield/bin/Debug/Newtonsoft.Json.dll
+/home/sean/Desktop/v1.2.3/VPNShield/bin/Debug/UnityEngine.CoreModule.dll
+/home/sean/Desktop/v1.2.3/VPNShield/bin/Debug/Newtonsoft.Json.xml
+/home/sean/Desktop/v1.2.3/VPNShield/obj/Debug/VPNShield.csprojAssemblyReference.cache
+/home/sean/Desktop/v1.2.3/VPNShield/obj/Debug/VPNShield.csproj.CoreCompileInputs.cache
+/home/sean/Desktop/v1.2.3/VPNShield/obj/Debug/VPNShield.csproj.CopyComplete
+/home/sean/Desktop/v1.2.3/VPNShield/obj/Debug/VPNShield.dll
+/home/sean/Desktop/v1.2.3/VPNShield/obj/Debug/VPNShield.pdb

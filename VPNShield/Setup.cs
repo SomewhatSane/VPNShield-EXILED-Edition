@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using EXILED;
 
 namespace VPNShield
 {
-
     public static class Setup
     {
         public static void CheckFileSystem()
@@ -60,6 +58,7 @@ namespace VPNShield
             if (Plugin.verboseMode) { Log.Info("Verbose mode is enabled."); }
             if (Plugin.accountCheck && Plugin.steamAPIKey == null) { Log.Info("This plugin requires a Steam API Key! Get one for free at https://steamcommunity.com/dev/apikey, and set it to vs_steamapikey!"); }
             if (Plugin.vpnCheck && Plugin.ipHubAPIKey == null) { Log.Info("This plugin requires a VPN API Key! Get one for free at https://iphub.info, and set it to vs_vpnapikey!"); }
+            Log.Info("Configuration loaded.");
         }
 
         public static void LoadData()
@@ -73,6 +72,7 @@ namespace VPNShield
             Plugin.vpnBlacklistedIPs = new HashSet<string>(FileManager.ReadAllLines(Plugin.exiledPath + "/VPNShield/VPNShield-BlacklistIPs.txt")); //Known IPs that ARE VPNs.
             Plugin.accountWhitelistedUserIDs = new HashSet<string>(FileManager.ReadAllLines(Plugin.exiledPath + "/VPNShield/VPNShield-WhitelistAccountAgeCheck.txt")); //Known UserIDs that ARE old enough.
             Plugin.checksWhitelistedUserIDs = new HashSet<string>(FileManager.ReadAllLines(Plugin.exiledPath + "/VPNShield/VPNShield-WhitelistUserIDs.txt")); //UserIDs that can bypass VPN AND account checks.
+            Log.Info("Data loaded.");
         }
     }
 }

@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using EXILED;
+﻿using EXILED;
 
 namespace VPNShield
 {
-    public class GlobalWhitelist
+    public static class GlobalWhitelist
     {
         public static bool GlobalWhitelistCheck(string ipAddress, string userID)
         {

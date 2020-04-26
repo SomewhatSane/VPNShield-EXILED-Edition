@@ -28,25 +28,27 @@ namespace VPNShield
         public static bool verboseMode;
         public static bool updateChecker;
 
-        public static string version = "1.2.3";
+        public static string version = "1.2.4";
+        public static string lastModifed = "2020/04/10 12:38 GMT";
 
         public override void OnEnable()
         {
-            Log.Info("VPNShield EXILED Edition v" + version + " by SomewhatSane. Last Modified: 2020/03/01 20:15 GMT.");
+            Log.Info("VPNShield EXILED Edition v" + version + " by SomewhatSane. Last Modified: " + lastModifed + ".");
             Log.Info("Thanks to KarlOfDuty for the original SMod VPNShield!");
 
-            Log.Info("Loading configs.");
+            Log.Info("Loading configuration.");
             Setup.ReloadConfig();
             _ = UpdateCheck.CheckForUpdate();
             Log.Info("Checking file system.");
             Setup.CheckFileSystem();
             Log.Info("Loading data.");
             Setup.LoadData();
-           
 
             Log.Info("Loading Event Handlers.");
+
             EventHandlers = new EventHandlers(this);
             Events.PlayerJoinEvent += EventHandlers.OnPlayerJoin;
+            Events.WaitingForPlayersEvent += EventHandlers.OnWaitingForPlayers;
             Events.RemoteAdminCommandEvent += EventHandlers.OnRACommand;
 
             Log.Info("Done.");
@@ -56,6 +58,8 @@ namespace VPNShield
         public override void OnDisable()
         {
             Events.PlayerJoinEvent -= EventHandlers.OnPlayerJoin;
+            Events.WaitingForPlayersEvent -= EventHandlers.OnWaitingForPlayers;
+            Events.RemoteAdminCommandEvent -= EventHandlers.OnRACommand;
             EventHandlers = null;
             Log.Info("Disabled.");
         }

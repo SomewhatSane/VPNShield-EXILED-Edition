@@ -1,18 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using EXILED;
 using EXILED.Extensions;
-using EXILED.Patches;
-using LiteNetLib;
-using System.Net;
-using System.IO;
-using Newtonsoft.Json.Linq;
-using Mirror;
-using LiteNetLib4Mirror;
-using LiteNetLib.Utils;
 
 namespace VPNShield
 {
@@ -23,7 +11,7 @@ namespace VPNShield
 
         public void OnRACommand(ref EXILED.RACommandEvent ev)
         {
-            if (ev.Command.ToUpper() == "VS_RELOAD")
+            if (ev.Command.ToUpper().Split(' ')[0] == "VS_RELOAD")
             {
                 ev.Allow = false;
                 Setup.ReloadConfig();
@@ -35,7 +23,7 @@ namespace VPNShield
 
         public void OnPlayerJoin(EXILED.PlayerJoinEvent ev)
         {
-            _ = Check(ev);
+            _ = Check(ev); //Do checks on in task to prevent holding up the game.
         }
 
         public async Task Check(EXILED.PlayerJoinEvent ev)
@@ -75,6 +63,11 @@ namespace VPNShield
             }
 
             //Else, let them continue.
+        }
+        public void OnWaitingForPlayers()
+        {
+            Setup.ReloadConfig();
+            Setup.LoadData();
         }
     }
 }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Net.Http;
 using EXILED;
 
@@ -22,7 +18,7 @@ namespace VPNShield
             using (HttpClient client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Add("User-Agent", "VPNShield Update Checker - Running VPNShield v" + Plugin.version);
-                HttpResponseMessage response = await client.GetAsync("http://www.somewhatsane.co.uk/plugins/vpnshield/latest.html");
+                HttpResponseMessage response = await client.GetAsync("https://scpsl.somewhatsane.co.uk/plugins/vpnshield/latest.html");
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -40,11 +36,7 @@ namespace VPNShield
 
                 else if (dataarray[0] != Plugin.version)
                 {
-                    Log.Info("A new version of VPNShield is available. Download it at: " + dataarray[1] + " .");
-                    if (dataarray[2] != null)
-                    {
-                        Log.Info("Message from Plugin Author: " + dataarray[2]);
-                    }
+                    Log.Info("A new version of VPNShield (v" + dataarray[0] + ") is available. Download it at: " + dataarray[1] + " .");
                 }
                 else
                 {

@@ -1,10 +1,8 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
 using System.IO;
 using Newtonsoft.Json.Linq;
 using System.Threading.Tasks;
-using System.Threading;
 using EXILED;
 
 namespace VPNShield

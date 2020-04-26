@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.IO;
 using System.Net;
@@ -12,7 +8,7 @@ using EXILED;
 
 namespace VPNShield
 {
-    public class Account
+    public static class Account
     {
         public static async Task<bool> CheckAccount(string ipAddress, string userID) //A result of TRUE will kick.
         {
