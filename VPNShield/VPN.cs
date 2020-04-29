@@ -9,10 +9,10 @@ namespace VPNShield
 {
     public static class VPN
     {
-        public static async Task<bool> CheckVPN(string ipAddress, string userID) //A result of TRUE will kick.
+        public static async Task<bool> CheckVPN(IPAddress ipAddress, string userID) //A result of TRUE will kick.
         {
-            if (BlacklistedIPCheck(ipAddress, userID)) { return true; } //Known VPN IPs.
-            if (WhitelistedIPCheck(ipAddress, userID)) { return false; } //Known good IPs. Else..
+            if (BlacklistedIPCheck(ipAddress, userID)) return true; //Known VPN IPs.
+            if (WhitelistedIPCheck(ipAddress, userID)) return false; //Known good IPs. Else..
 
             using (HttpClient client = new HttpClient())
             {
@@ -21,15 +21,9 @@ namespace VPNShield
 
                 if (!webRequest.IsSuccessStatusCode)
                 {
-                    if (webRequest.StatusCode == (HttpStatusCode)429)
-                    {
-                        Log.Error("VPN check could not complete. You have reached your API key's limit.");
-                    }
-
-                    else
-                    {
-                        Log.Error("VPN API connection error: " + webRequest.StatusCode + " - " + webRequest.Content.ReadAsStringAsync());
-                    }
+                    Log.Error(webRequest.StatusCode == (HttpStatusCode) 429
+                        ? "VPN check could not complete. You have reached your API key's limit."
+                        : $"VPN API connection error: {webRequest.StatusCode} - {webRequest.Content.ReadAsStringAsync()}");
                     return false;
                 }
 
@@ -38,78 +32,62 @@ namespace VPNShield
                 JObject json = JObject.Parse(apiResponse);
                 int block = json.Value<int>("block");
 
-                if (block == 0 || block == 2) //2 is for unknown calls from the API. Strange.
+                switch (block)
                 {
-                    if (Plugin.verboseMode)
+                    case 0:
+                    case 2: //2 is for unknown calls from the API. Strange.
                     {
-                        Log.Info(ipAddress + " (" + userID + ") is not a detectable VPN.");
+                        if (Plugin.verboseMode)
+                            Log.Info(ipAddress + " (" + userID + ") is not a detectable VPN.");
+                        
+                        //Add to whitelist here!!
+                        WhitelistAdd(ipAddress);
+                        return false;
                     }
-                    //Add to whitelist here!!
-                    WhitelistAdd(ipAddress);
-                    return false;
-                }
-
-                else if (block == 1)
-                {
-                    if (Plugin.verboseMode)
+                    
+                    case 1:
                     {
-                        Log.Info(ipAddress + " (" + userID + ") is a detectable VPN. Kicking..");
-                    }
+                        if (Plugin.verboseMode)
+                            Log.Info(ipAddress + " (" + userID + ") is a detectable VPN. Kicking..");
 
-                    //Add to blacklist to prevent loads of calls!
-                    BlackListAdd(ipAddress);
-                    return true;
+                        //Add to blacklist to prevent loads of calls!
+                        BlackListAdd(ipAddress);
+                        return true;
+                    }
                 }
             }
             
-
-            
             return false;
         }
-        
-        public static void WhitelistAdd(string ipAddress)
+
+        private static void WhitelistAdd(IPAddress ipAddress)
         {
             Plugin.vpnWhitelistedIPs.Add(ipAddress);
             using (StreamWriter whitelist = File.AppendText(Plugin.exiledPath + "/VPNShield/VPNShield-WhitelistIPs.txt")) 
-            {
                 whitelist.WriteLine(ipAddress);
-            }
         }
-
-
-        public static void BlackListAdd(string ipAddress)
+        
+        private static void BlackListAdd(IPAddress ipAddress)
         {
             Plugin.vpnBlacklistedIPs.Add(ipAddress);
             using (StreamWriter blacklist = File.AppendText(Plugin.exiledPath + "/VPNShield/VPNShield-BlacklistIPs.txt")) 
-            {
                 blacklist.WriteLine(ipAddress);
-            }
         }
 
-        public static bool WhitelistedIPCheck(string ipAddress, string userID)
+        private static bool WhitelistedIPCheck(IPAddress ipAddress, string userID)
         {
-            if (Plugin.vpnWhitelistedIPs.Contains(ipAddress))
-            {
-                if (Plugin.verboseMode)
-                {
-                    Log.Info(ipAddress + " (" + userID + ") has already passed a VPN check / is whitelisted.");
-                }
-                return true;
-            }
-            return false;
+            if (!Plugin.vpnWhitelistedIPs.Contains(ipAddress)) return false;
+            if (Plugin.verboseMode)
+                Log.Info(ipAddress + " (" + userID + ") has already passed a VPN check / is whitelisted.");
+            return true;
         }
 
-        public static bool BlacklistedIPCheck(string ipAddress, string userID)
+        internal static bool BlacklistedIPCheck(IPAddress ipAddress, string userID)
         {
-            if (Plugin.vpnBlacklistedIPs.Contains(ipAddress))
-            {
-                if (Plugin.verboseMode)
-                {
-                    Log.Info(ipAddress + " (" + userID + ") is already known as a VPN / is blacklisted. Kicking.");
-                }
-                return true;
-            }
-            return false;
+            if (!Plugin.vpnBlacklistedIPs.Contains(ipAddress)) return false;
+            if (Plugin.verboseMode)
+                Log.Info(ipAddress + " (" + userID + ") is already known as a VPN / is blacklisted. Kicking.");
+            return true;
         }
     }
 }

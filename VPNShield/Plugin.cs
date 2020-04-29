@@ -2,19 +2,20 @@
 using System.Collections.Generic;
 using System;
 using System.IO;
+using System.Net;
 
 namespace VPNShield
 {
     public class Plugin : EXILED.Plugin
     {
-        public static string exiledPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Plugins");
+        public static readonly string exiledPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Plugins");
 
-        public EventHandlers EventHandlers;
+        private EventHandlers eventHandlers;
 
-        public static HashSet<string> vpnWhitelistedIPs;
-        public static HashSet<string> vpnBlacklistedIPs;
-        public static HashSet<string> accountWhitelistedUserIDs;
-        public static HashSet<string> checksWhitelistedUserIDs;
+        public static readonly HashSet<IPAddress> vpnWhitelistedIPs = new HashSet<IPAddress>();
+        public static readonly HashSet<IPAddress> vpnBlacklistedIPs = new HashSet<IPAddress>();
+        public static readonly HashSet<string> accountWhitelistedUserIDs = new HashSet<string>();
+        public static readonly HashSet<string> checksWhitelistedUserIDs = new HashSet<string>();
 
         public static bool accountCheck;
         public static int minimumAccountAge;
@@ -24,12 +25,13 @@ namespace VPNShield
         public static bool vpnCheck;
         public static string ipHubAPIKey;
         public static string vpnKickMessage;
+        public static string vpnKickMessageShort;
 
         public static bool verboseMode;
         public static bool updateChecker;
 
-        public static string version = "1.2.4";
-        public static string lastModifed = "2020/04/10 12:38 GMT";
+        internal const string version = "1.3.0";
+        private const string lastModifed = "2020/04/29 16:22 UTC"; //Time zones are defined in UTC, not GMT
 
         public override void OnEnable()
         {
@@ -46,21 +48,24 @@ namespace VPNShield
 
             Log.Info("Loading Event Handlers.");
 
-            EventHandlers = new EventHandlers(this);
-            Events.PlayerJoinEvent += EventHandlers.OnPlayerJoin;
-            Events.WaitingForPlayersEvent += EventHandlers.OnWaitingForPlayers;
-            Events.RemoteAdminCommandEvent += EventHandlers.OnRACommand;
+            eventHandlers = new EventHandlers(this);
+            Events.PreAuthEvent += eventHandlers.OnPreAuth;
+            Events.PlayerJoinEvent += eventHandlers.OnPlayerJoin;
+            Events.RoundEndEvent += eventHandlers.OnRoundEnd;
+            Events.WaitingForPlayersEvent += eventHandlers.OnWaitingForPlayers;
+            Events.RemoteAdminCommandEvent += eventHandlers.OnRACommand;
 
             Log.Info("Done.");
-            
         }
 
         public override void OnDisable()
         {
-            Events.PlayerJoinEvent -= EventHandlers.OnPlayerJoin;
-            Events.WaitingForPlayersEvent -= EventHandlers.OnWaitingForPlayers;
-            Events.RemoteAdminCommandEvent -= EventHandlers.OnRACommand;
-            EventHandlers = null;
+            Events.PreAuthEvent -= eventHandlers.OnPreAuth;
+            Events.PlayerJoinEvent -= eventHandlers.OnPlayerJoin;
+            Events.RoundEndEvent -= eventHandlers.OnRoundEnd;
+            Events.WaitingForPlayersEvent -= eventHandlers.OnWaitingForPlayers;
+            Events.RemoteAdminCommandEvent -= eventHandlers.OnRACommand;
+            eventHandlers = null;
             Log.Info("Disabled.");
         }
 

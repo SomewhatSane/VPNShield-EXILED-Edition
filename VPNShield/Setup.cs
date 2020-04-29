@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
+using System.Net;
 using EXILED;
 
 namespace VPNShield
 {
-    public static class Setup
+    internal static class Setup
     {
-        public static void CheckFileSystem()
+        internal static void CheckFileSystem()
         {
             if (!Directory.Exists(Plugin.exiledPath + "/VPNShield"))
             {
@@ -41,37 +41,62 @@ namespace VPNShield
             Log.Info("File system check complete.");
         }
 
-        public static void ReloadConfig()
+        internal static void ReloadConfig()
         {
-            Plugin.accountCheck = Plugin.Config.GetBool("vs_accountcheck", false);
-            Plugin.steamAPIKey = Plugin.Config.GetString("vs_steamapikey", null);
-            Plugin.minimumAccountAge = Plugin.Config.GetInt("vs_accountminage", 14);
-            Plugin.accountCheckKickMessage = Plugin.Config.GetString("vs_accountkickmessage", "Your account must be at least " + Plugin.minimumAccountAge.ToString() + " day(s) old to play on this server.");
+            Plugin.accountCheck = EXILED.Plugin.Config.GetBool("vs_accountcheck", false);
+            Plugin.steamAPIKey = EXILED.Plugin.Config.GetString("vs_steamapikey", null);
+            Plugin.minimumAccountAge = EXILED.Plugin.Config.GetInt("vs_accountminage", 14);
+            Plugin.accountCheckKickMessage = EXILED.Plugin.Config.GetString("vs_accountkickmessage", "Your account must be at least " + Plugin.minimumAccountAge.ToString() + " day(s) old to play on this server.");
 
-            Plugin.vpnCheck = Plugin.Config.GetBool("vs_vpncheck", true);
-            Plugin.ipHubAPIKey = Plugin.Config.GetString("vs_vpnapikey", null);
-            Plugin.vpnKickMessage = Plugin.Config.GetString("vs_vpnkickmessage", "VPNs and proxies are forbidden on this server.");
+            Plugin.vpnCheck = EXILED.Plugin.Config.GetBool("vs_vpncheck", true);
+            Plugin.ipHubAPIKey = EXILED.Plugin.Config.GetString("vs_vpnapikey", null);
+            Plugin.vpnKickMessage = EXILED.Plugin.Config.GetString("vs_vpnkickmessage", "VPNs and proxies are forbidden on this server.");
+            Plugin.vpnKickMessageShort = Plugin.vpnKickMessage.Length > 400
+                ? Plugin.vpnKickMessage.Substring(0, 400)
+                : Plugin.vpnKickMessage;
 
-            Plugin.verboseMode = Plugin.Config.GetBool("vs_verbose", false);
-            Plugin.updateChecker = Plugin.Config.GetBool("vs_checkforupdates", true);
+            Plugin.verboseMode = EXILED.Plugin.Config.GetBool("vs_verbose", false);
+            Plugin.updateChecker = EXILED.Plugin.Config.GetBool("vs_checkforupdates", true);
 
-            if (Plugin.verboseMode) { Log.Info("Verbose mode is enabled."); }
-            if (Plugin.accountCheck && Plugin.steamAPIKey == null) { Log.Info("This plugin requires a Steam API Key! Get one for free at https://steamcommunity.com/dev/apikey, and set it to vs_steamapikey!"); }
-            if (Plugin.vpnCheck && Plugin.ipHubAPIKey == null) { Log.Info("This plugin requires a VPN API Key! Get one for free at https://iphub.info, and set it to vs_vpnapikey!"); }
+            if (Plugin.verboseMode)
+                Log.Info("Verbose mode is enabled.");
+            
+            if (Plugin.accountCheck && string.IsNullOrEmpty(Plugin.steamAPIKey))
+            {
+                Plugin.accountCheck = false;
+                Log.Info("This plugin requires a Steam API Key! Get one for free at https://steamcommunity.com/dev/apikey, and set it to vs_steamapikey!");
+            }
+
+            if (Plugin.vpnCheck && string.IsNullOrEmpty(Plugin.ipHubAPIKey))
+            {
+                Plugin.vpnCheck = false;
+                Log.Info("This plugin requires a VPN API Key! Get one for free at https://iphub.info, and set it to vs_vpnapikey!");
+            }
+            
             Log.Info("Configuration loaded.");
         }
 
-        public static void LoadData()
+        internal static void LoadData()
         {
-            Plugin.vpnWhitelistedIPs = null;
-            Plugin.vpnBlacklistedIPs = null;
-            Plugin.accountWhitelistedUserIDs = null;
-            Plugin.checksWhitelistedUserIDs = null;
+            Plugin.vpnWhitelistedIPs.Clear();
+            Plugin.vpnBlacklistedIPs.Clear();
+            Plugin.accountWhitelistedUserIDs.Clear();
+            Plugin.checksWhitelistedUserIDs.Clear();
 
-            Plugin.vpnWhitelistedIPs = new HashSet<string>(FileManager.ReadAllLines(Plugin.exiledPath + "/VPNShield/VPNShield-WhitelistIPs.txt")); //Known IPs that are not VPNs.
-            Plugin.vpnBlacklistedIPs = new HashSet<string>(FileManager.ReadAllLines(Plugin.exiledPath + "/VPNShield/VPNShield-BlacklistIPs.txt")); //Known IPs that ARE VPNs.
-            Plugin.accountWhitelistedUserIDs = new HashSet<string>(FileManager.ReadAllLines(Plugin.exiledPath + "/VPNShield/VPNShield-WhitelistAccountAgeCheck.txt")); //Known UserIDs that ARE old enough.
-            Plugin.checksWhitelistedUserIDs = new HashSet<string>(FileManager.ReadAllLines(Plugin.exiledPath + "/VPNShield/VPNShield-WhitelistUserIDs.txt")); //UserIDs that can bypass VPN AND account checks.
+            foreach (var ip in FileManager.ReadAllLines(Plugin.exiledPath + "/VPNShield/VPNShield-WhitelistIPs.txt"))
+                if (IPAddress.TryParse(ip, out var addr))
+                    Plugin.vpnWhitelistedIPs.Add(addr);
+            
+            foreach (var ip in FileManager.ReadAllLines(Plugin.exiledPath + "/VPNShield/VPNShield-BlacklistIPs.txt"))
+                if (IPAddress.TryParse(ip, out var addr))
+                    Plugin.vpnBlacklistedIPs.Add(addr);
+
+            foreach (var id in FileManager.ReadAllLines(Plugin.exiledPath + "/VPNShield/VPNShield-WhitelistAccountAgeCheck.txt"))
+                Plugin.accountWhitelistedUserIDs.Add(id);
+            
+            foreach (var id in FileManager.ReadAllLines(Plugin.exiledPath + "/VPNShield/VPNShield-WhitelistUserIDs.txt"))
+                Plugin.checksWhitelistedUserIDs.Add(id);
+            
             Log.Info("Data loaded.");
         }
     }
