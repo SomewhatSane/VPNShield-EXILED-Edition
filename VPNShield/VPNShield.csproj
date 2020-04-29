@@ -31,17 +31,20 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>..\References\Assembly-CSharp.dll</HintPath>
+    <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>References\Assembly-CSharp.dll</HintPath>
     </Reference>
-    <Reference Include="EXILED">
-      <HintPath>..\References\EXILED.dll</HintPath>
+    <Reference Include="EXILED, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>References\EXILED.dll</HintPath>
     </Reference>
-    <Reference Include="EXILED_Events">
-      <HintPath>..\References\EXILED_Events.dll</HintPath>
+    <Reference Include="EXILED_Events, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>References\EXILED_Events.dll</HintPath>
     </Reference>
     <Reference Include="Mirror">
       <HintPath>..\References\Mirror.dll</HintPath>
+    </Reference>
+    <Reference Include="Mirror, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>References\Mirror.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -57,11 +60,15 @@
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>..\References\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>References\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Account.cs" />
     <Compile Include="EventHandlers.cs" />
     <Compile Include="GlobalWhitelist.cs" />
+    <Compile Include="PlayerToKick.cs" />
     <Compile Include="Setup.cs" />
     <Compile Include="UpdateCheck.cs" />
     <Compile Include="VPN.cs" />
