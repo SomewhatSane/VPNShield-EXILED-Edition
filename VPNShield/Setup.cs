@@ -44,9 +44,10 @@ namespace VPNShield
         internal static void ReloadConfig()
         {
             Plugin.accountCheck = EXILED.Plugin.Config.GetBool("vs_accountcheck", false);
+            Plugin.accountKickPrivate = EXILED.Plugin.Config.GetBool("vs_accountkickprivate", true);
             Plugin.steamAPIKey = EXILED.Plugin.Config.GetString("vs_steamapikey", null);
             Plugin.minimumAccountAge = EXILED.Plugin.Config.GetInt("vs_accountminage", 14);
-            Plugin.accountCheckKickMessage = EXILED.Plugin.Config.GetString("vs_accountkickmessage", "Your account must be at least " + Plugin.minimumAccountAge.ToString() + " day(s) old to play on this server.");
+            Plugin.accountCheckKickMessage = EXILED.Plugin.Config.GetString("vs_accountkickmessage", "Your account must be at least " + Plugin.minimumAccountAge.ToString() + " day(s) old to play on this server or your account age could not be checked due to privacy settings.");
 
             Plugin.vpnCheck = EXILED.Plugin.Config.GetBool("vs_vpncheck", true);
             Plugin.ipHubAPIKey = EXILED.Plugin.Config.GetString("vs_vpnapikey", null);

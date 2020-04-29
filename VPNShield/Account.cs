@@ -35,12 +35,18 @@ namespace VPNShield
                         }
 
                         string apiResponse = await webRequest.Content.ReadAsStringAsync();
-
                         JObject json = JObject.Parse(apiResponse);
-                        int timecreated = (int)json["response"]["players"][0]["timecreated"];
 
-                        DateTime creationDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0);
-                        creationDateTime = creationDateTime.AddSeconds(timecreated);
+                        int communityvisibilitystate = (int)json["response"]["players"][0]["communityvisibilitystate"];
+                        if (Plugin.accountKickPrivate && communityvisibilitystate == 1)
+                        {
+                            if (Plugin.verboseMode)
+                                Log.Info("UserID " + userID + " (" + ipAddress + ") cannot have their account age checked due to their privacy settings. Kicking..");
+                            return true;
+                        }
+
+                        int timecreated = (int)json["response"]["players"][0]["timecreated"];
+                        DateTime creationDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(timecreated);
 
                         int accountAge = (int)(DateTime.Today - creationDateTime).TotalDays;
 

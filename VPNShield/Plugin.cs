@@ -18,6 +18,7 @@ namespace VPNShield
         public static readonly HashSet<string> checksWhitelistedUserIDs = new HashSet<string>();
 
         public static bool accountCheck;
+        public static bool accountKickPrivate;
         public static int minimumAccountAge;
         public static string accountCheckKickMessage;
         public static string steamAPIKey;
@@ -30,8 +31,8 @@ namespace VPNShield
         public static bool verboseMode;
         public static bool updateChecker;
 
-        internal const string version = "1.3.0";
-        private const string lastModifed = "2020/04/29 16:22 UTC"; //Time zones are defined in UTC, not GMT
+        internal const string version = "1.3.1";
+        private const string lastModifed = "2020/04/29 19:02 UTC";
 
         public override void OnEnable()
         {
@@ -46,7 +47,7 @@ namespace VPNShield
             Log.Info("Loading data.");
             Setup.LoadData();
 
-            Log.Info("Loading Event Handlers.");
+            Log.Info("Registering Event Handlers.");
 
             eventHandlers = new EventHandlers(this);
             Events.PreAuthEvent += eventHandlers.OnPreAuth;
