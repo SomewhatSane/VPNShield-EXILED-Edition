@@ -47,16 +47,16 @@ namespace VPNShield
             if (ev.UserId.Contains("@northwood", StringComparison.InvariantCultureIgnoreCase))
             {
                 if (Plugin.verboseMode)
-                    Log.Info($"UserID {ev.UserId} ({ev.Request.RemoteEndPoint.Address}) is a northwood studio member. Skipping checks.");
+                    Log.Info($"UserID {ev.UserId} ({ev.Request.RemoteEndPoint.Address}) is a Northwood Studios member. Skipping checks.");
                 return;
             }
             
 #if Pre10
-            reader.SetSource(ev.Request.Data.RawData, 2); //2 bytes
+            reader.SetSource(ev.Request.Data.RawData, 15); //13 bytes of handshake + 2 bytes of data
             if (reader.TryGetString(out var s) && reader.TryGetULong(out var e) &&
                 reader.TryGetByte(out var flags)) //We don't care about UserID and preauth expiration date
 #else
-            reader.SetSource(ev.Request.Data.RawData, 7); //3 bytes and 1 int offset
+            reader.SetSource(ev.Request.Data.RawData, 20); //13 bytes of handshake and 3 bytes and 1 int offset
             if (reader.TryGetBytesWithLength(out var b) && reader.TryGetString(out var s) &&
                 reader.TryGetULong(out var e) && reader.TryGetByte(out var flags)) //We don't care about preauth challenge stuff, UserID and preauth expiration date
 #endif
@@ -66,12 +66,16 @@ namespace VPNShield
                 {
                     if (Plugin.verboseMode)
                         Log.Info(
-                            $"UserID {ev.UserId} ({ev.Request.RemoteEndPoint.Address}) has bypass flags. Skipping checks.");
+                            $"UserID {ev.UserId} ({ev.Request.RemoteEndPoint.Address}) have bypass flags (flags: {(int)flags}). Skipping checks.");
                     return;
                 }
+                
+                if (Plugin.verboseMode)
+                    Log.Info(
+                        $"UserID {ev.UserId} ({ev.Request.RemoteEndPoint.Address}) doesn't have bypass flags (flags: {(int)flags}).");
             }
             else
-                Log.Error($"Failed to process preuath token of user {ev.UserId} ({ev.Request.RemoteEndPoint.Address})!");
+                Log.Error($"Failed to process preauth token of user {ev.UserId} ({ev.Request.RemoteEndPoint.Address})! {BitConverter.ToString(ev.Request.Data.RawData)}");
 
             if (Plugin.vpnCheck && VPN.BlacklistedIPCheck(ev.Request.RemoteEndPoint.Address, ev.UserId))
             {
