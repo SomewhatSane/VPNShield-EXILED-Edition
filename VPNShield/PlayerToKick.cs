@@ -1,5 +1,4 @@
 ﻿using System;
-using EXILED.Extensions;
 
 namespace VPNShield
 {

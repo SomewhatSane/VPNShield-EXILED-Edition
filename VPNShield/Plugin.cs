@@ -8,7 +8,7 @@ namespace VPNShield
 {
     public class Plugin : EXILED.Plugin
     {
-        public static string exiledPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Plugins");
+        public static readonly string exiledPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Plugins");
 
         private EventHandlers eventHandlers;
 

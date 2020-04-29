@@ -1,13 +1,12 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Net;
 using EXILED;
 
 namespace VPNShield
 {
-    public static class Setup
+    internal static class Setup
     {
-        public static void CheckFileSystem()
+        internal static void CheckFileSystem()
         {
             if (!Directory.Exists(Plugin.exiledPath + "/VPNShield"))
             {
@@ -42,7 +41,7 @@ namespace VPNShield
             Log.Info("File system check complete.");
         }
 
-        public static void ReloadConfig()
+        internal static void ReloadConfig()
         {
             Plugin.accountCheck = EXILED.Plugin.Config.GetBool("vs_accountcheck", false);
             Plugin.steamAPIKey = EXILED.Plugin.Config.GetString("vs_steamapikey", null);
@@ -77,7 +76,7 @@ namespace VPNShield
             Log.Info("Configuration loaded.");
         }
 
-        public static void LoadData()
+        internal static void LoadData()
         {
             Plugin.vpnWhitelistedIPs.Clear();
             Plugin.vpnBlacklistedIPs.Clear();

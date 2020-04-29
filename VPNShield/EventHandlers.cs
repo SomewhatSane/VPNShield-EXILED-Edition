@@ -1,22 +1,23 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 using EXILED;
 using EXILED.Extensions;
 using LiteNetLib.Utils;
-using Telepathy;
 
 namespace VPNShield
 {
     public class EventHandlers
     {
-        public Plugin plugin;
-        public EventHandlers(Plugin plugin) => this.plugin = plugin;
+        public EventHandlers(Plugin plugin)
+        {
+        }
+        
         private const byte BypassFlags = (1 << 1) | (1 << 3); //IgnoreBans or IgnoreGeoblock
         
         internal static readonly Stopwatch stopwatch = new Stopwatch();
-        internal static readonly Stopwatch cleanupStopwatch = new Stopwatch();
+        private static readonly Stopwatch cleanupStopwatch = new Stopwatch();
         private static readonly HashSet<PlayerToKick> ToKick = new HashSet<PlayerToKick>();
         private static readonly HashSet<PlayerToKick> ToClear = new HashSet<PlayerToKick>();
         private static readonly NetDataReader reader = new NetDataReader();
@@ -24,7 +25,7 @@ namespace VPNShield
 
         public void OnRACommand(ref RACommandEvent ev)
         {
-            if (ev.Command.ToUpper().Split(' ')[0] != "VS_RELOAD") return;
+            if (!ev.Command.Split(' ')[0].Equals("VS_RELOAD", StringComparison.InvariantCultureIgnoreCase)) return;
             ev.Allow = false;
             Setup.ReloadConfig();
             Setup.LoadData();
@@ -42,7 +43,7 @@ namespace VPNShield
                 return;
             }
             
-            if (ev.UserId.Contains("@northwood"))
+            if (ev.UserId.Contains("@northwood", StringComparison.InvariantCultureIgnoreCase))
             {
                 if (Plugin.verboseMode)
                     Log.Info($"UserID {ev.UserId} ({ev.Request.RemoteEndPoint.Address}) is a northwood studio member. Skipping checks.");
@@ -139,6 +140,7 @@ namespace VPNShield
 
             //Else, let them continue.
         }
+        
         public void OnWaitingForPlayers()
         {
             Setup.ReloadConfig();

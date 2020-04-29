@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using System.IO;
 using System.Net;
@@ -8,18 +9,18 @@ using EXILED;
 
 namespace VPNShield
 {
-    public static class Account
+    internal static class Account
     {
-        public static async Task<bool>CheckAccount(IPAddress ipAddress, string userID) //A result of TRUE will kick.
+        internal static async Task<bool>CheckAccount(IPAddress ipAddress, string userID) //A result of TRUE will kick.
         {
             if (CheckWhitelist(ipAddress, userID))
                 return false; //Check for all ready known accounts.
 
-            if (!userID.Contains("@"))
+            if (!userID.Contains("@", StringComparison.InvariantCulture))
                 return false; //Invalid UserID
 
             var split = userID.Split('@');
-            switch (split[1])
+            switch (split[1].ToLower(CultureInfo.InvariantCulture))
             {
                 case "steam":
                     using (HttpClient client = new HttpClient())
