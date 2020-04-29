@@ -30,8 +30,8 @@ namespace VPNShield
         public static bool verboseMode;
         public static bool updateChecker;
 
-        public static readonly string version = "1.2.4";
-        public static readonly string lastModifed = "2020/04/10 12:38 GMT";
+        internal const string version = "1.2.4";
+        private const string lastModifed = "2020/04/10 12:38 UTC"; //Time zones are defined in UTC, not GMT
 
         public override void OnEnable()
         {

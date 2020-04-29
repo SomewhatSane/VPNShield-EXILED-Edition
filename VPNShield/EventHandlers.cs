@@ -1,4 +1,5 @@
-﻿using System;
+﻿#define Pre10 //Remove this symbol to make the plugin compatible with game versions 10.0.0 and newer instead of 9.1.3
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -50,10 +51,16 @@ namespace VPNShield
                 return;
             }
             
+#if Pre10
+            reader.SetSource(ev.Request.Data.RawData, 2); //2 bytes
+            if (reader.TryGetString(out var s) && reader.TryGetULong(out var e) &&
+                reader.TryGetByte(out var flags)) //We don't care about UserID and preauth expiration date
+#else
             reader.SetSource(ev.Request.Data.RawData, 7); //3 bytes and 1 int offset
-
             if (reader.TryGetBytesWithLength(out var b) && reader.TryGetString(out var s) &&
                 reader.TryGetULong(out var e) && reader.TryGetByte(out var flags)) //We don't care about preauth challenge stuff, UserID and preauth expiration date
+#endif
+
             {
                 if ((flags & BypassFlags) > 0)
                 {
@@ -134,7 +141,8 @@ namespace VPNShield
                         StartStopwatch();
                         ToKick.Add(new PlayerToKick(ev.UserId, KickReason.VPN));
                     }
-                    return;
+
+                    //return; //Currently this return is redundant
                 }
             }
 
