@@ -9,6 +9,7 @@ vs_vpnkickmessage - String - Kick message for VPN users - Default: "VPNs and Pro
 <br>
 vs_steamapikey - String - Steam API key for account age checking - Default: null<br>
 vs_accountminage - Integer - Minimum age of a Steam account that is allowed on the server (in days) - Default: 14<br>
+vs_accountkickprivate - Boolean - Kick newly seen private Steam accounts that cannot have their account age checked. - Default: True<br>
 vs_accountkickmessage - String - Kick message for Steam account too young - Default: "Your account must be atleast X day(s) old to play on this server."<br>
 <br>
 vs_verbose - Boolean - Verbose mode - Default: false<br>
