@@ -7,7 +7,7 @@ namespace VPNShield
         Account,
         VPN
     }
-    
+
     internal readonly struct PlayerToKick : IEquatable<PlayerToKick>
     {
         private readonly string userId;
@@ -21,12 +21,19 @@ namespace VPNShield
             creationTime = (uint)EventHandlers.stopwatch.Elapsed.TotalSeconds;
         }
 
-        public bool Equals(PlayerToKick other) =>
-            string.Equals(userId, other.userId, StringComparison.InvariantCultureIgnoreCase);
+        public bool Equals(PlayerToKick other)
+        {
+            return string.Equals(userId, other.userId, StringComparison.InvariantCultureIgnoreCase);
+        }
 
-        public override bool Equals(object obj) => obj is PlayerToKick other && Equals(other);
+        public override bool Equals(object obj)
+        {
+            return obj is PlayerToKick other && Equals(other);
+        }
 
-        public override int GetHashCode() =>
-            userId != null ? StringComparer.OrdinalIgnoreCase.GetHashCode(userId) : 0;
+        public override int GetHashCode()
+        {
+            return userId != null ? StringComparer.OrdinalIgnoreCase.GetHashCode(userId) : 0;
+        }
     }
 }

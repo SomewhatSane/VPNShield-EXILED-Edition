@@ -1,77 +1,93 @@
-﻿using EXILED;
-using System.Collections.Generic;
+﻿using Exiled.API.Enums;
+using Exiled.API.Features;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using PlayerEvents = Exiled.Events.Handlers.Player;
+using ServerEvents = Exiled.Events.Handlers.Server;
 
 namespace VPNShield
 {
-    public class Plugin : EXILED.Plugin
+    public class Plugin : Plugin<Config>
     {
+        public EventHandlers EventHandlers;
+        public Account Account;
+        public VPN VPN;
+
+        public override string Name { get; } = "VPNShield";
+        public override string Author { get; } = "SomewhatSane";
+        public override string Prefix { get; } = "vs";
+        public override Version RequiredExiledVersion { get; } = new Version("2.0.0");
+        public override PluginPriority Priority { get; } = PluginPriority.Highest;
+
         public static readonly string exiledPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Plugins");
 
-        private EventHandlers eventHandlers;
 
         public static readonly HashSet<IPAddress> vpnWhitelistedIPs = new HashSet<IPAddress>();
         public static readonly HashSet<IPAddress> vpnBlacklistedIPs = new HashSet<IPAddress>();
         public static readonly HashSet<string> accountWhitelistedUserIDs = new HashSet<string>();
         public static readonly HashSet<string> checksWhitelistedUserIDs = new HashSet<string>();
 
-        public static bool accountCheck;
-        public static bool accountKickPrivate;
-        public static int minimumAccountAge;
-        public static string accountCheckKickMessage;
-        public static string steamAPIKey;
 
-        public static bool vpnCheck;
-        public static string ipHubAPIKey;
-        public static string vpnKickMessage;
-        public static string vpnKickMessageShort;
+        internal const string version = "2.0.0";
+        internal const string lastModifed = "2020/07/14 20:45 UTC";
 
-        public static bool verboseMode;
-        public static bool updateChecker;
 
-        internal const string version = "1.3.1";
-        private const string lastModifed = "2020/04/29 19:02 UTC";
-
-        public override void OnEnable()
+        public override void OnEnabled()
         {
-            Log.Info("VPNShield EXILED Edition v" + version + " by SomewhatSane. Last Modified: " + lastModifed + ".");
-            Log.Info("Thanks to KarlOfDuty for the original SMod VPNShield!");
+            base.OnEnabled();
 
-            Log.Info("Loading configuration.");
-            Setup.ReloadConfig();
-            _ = UpdateCheck.CheckForUpdate();
+            if (!Config.IsEnabled) return;
+
+            Log.Info($"VPNShield EXILED Edition v{version} by SomewhatSane. Last Modified: {lastModifed}.");
+
+            Log.Info("Loading base scripts.");
+            Account = new Account(this);
+            VPN = new VPN(this);
+
+            if (Config.CheckForUpdates)
+            {
+                Log.Info("Checking for update.");
+                _ = UpdateCheck.CheckForUpdate();
+            }
+
+            Log.Info("Running configuration validator.");
+            Config.ConfigValidator();
+
             Log.Info("Checking file system.");
-            Setup.CheckFileSystem();
+            Filesystem.CheckFileSystem();
+
             Log.Info("Loading data.");
-            Setup.LoadData();
+            Filesystem.LoadData();
 
             Log.Info("Registering Event Handlers.");
 
-            eventHandlers = new EventHandlers(this);
-            Events.PreAuthEvent += eventHandlers.OnPreAuth;
-            Events.PlayerJoinEvent += eventHandlers.OnPlayerJoin;
-            Events.RoundEndEvent += eventHandlers.OnRoundEnd;
-            Events.WaitingForPlayersEvent += eventHandlers.OnWaitingForPlayers;
-            Events.RemoteAdminCommandEvent += eventHandlers.OnRACommand;
+            EventHandlers = new EventHandlers(this);
+            PlayerEvents.PreAuthenticating += EventHandlers.PreAuthenticating;
+            PlayerEvents.Joined += EventHandlers.Joined;
+            ServerEvents.RoundEnded += EventHandlers.RoundEnded;
+            ServerEvents.WaitingForPlayers += EventHandlers.WaitingForPlayers;
 
             Log.Info("Done.");
         }
 
-        public override void OnDisable()
+        public override void OnDisabled()
         {
-            Events.PreAuthEvent -= eventHandlers.OnPreAuth;
-            Events.PlayerJoinEvent -= eventHandlers.OnPlayerJoin;
-            Events.RoundEndEvent -= eventHandlers.OnRoundEnd;
-            Events.WaitingForPlayersEvent -= eventHandlers.OnWaitingForPlayers;
-            Events.RemoteAdminCommandEvent -= eventHandlers.OnRACommand;
-            eventHandlers = null;
+            base.OnDisabled();
+
+            PlayerEvents.PreAuthenticating -= EventHandlers.PreAuthenticating;
+            PlayerEvents.Joined -= EventHandlers.Joined;
+            ServerEvents.RoundEnded -= EventHandlers.RoundEnded;
+            ServerEvents.WaitingForPlayers -= EventHandlers.WaitingForPlayers;
+            EventHandlers = null;
+
+            Account = null;
+            VPN = null;
+
             Log.Info("Disabled.");
         }
 
-        public override void OnReload() { }
-
-        public override string getName { get; } = "VPNShield EXILED Edition";
+        public override void OnReloaded() { }
     }
 }
