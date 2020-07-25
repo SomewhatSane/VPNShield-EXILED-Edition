@@ -44,21 +44,20 @@ namespace VPNShield
             if ((flags & BypassFlags) > 0)
             {
                 if (plugin.Config.VerboseMode)
-                    Log.Info($"UserID {ev.UserId} ({ev.Request.RemoteEndPoint.Address}) have bypass flags (flags: {(int)flags}). Skipping checks.");
+                    Log.Info($"UserID {ev.UserId} ({ev.Request.RemoteEndPoint.Address}) has bypass flags (flags: {(int)flags}). Skipping checks.");
                 return;
             }
-
-            if (plugin.Config.VerboseMode)
-                Log.Info($"UserID {ev.UserId} ({ev.Request.RemoteEndPoint.Address}) doesn't have bypass flags (flags: {(int)flags}).");
             else
-                Log.Error($"Failed to process preauth token of user {ev.UserId} ({ev.Request.RemoteEndPoint.Address})! {BitConverter.ToString(ev.Request.Data.RawData)}");
+            {
+                if (plugin.Config.VerboseMode)
+                    Log.Info($"UserID {ev.UserId} ({ev.Request.RemoteEndPoint.Address}) doesn't have bypass flags (flags: {(int)flags}).");
+            }
 
             if (plugin.Config.VpnCheck && plugin.VPN.BlacklistedIPCheck(ev.Request.RemoteEndPoint.Address, ev.UserId))
             {
-
                 writer.Reset();
                 writer.Put((byte)10);
-                writer.Put(plugin.Config.VpnKickMessage); //400 due to the limit of the UDP packet.
+                writer.Put(plugin.Config.VpnKickMessage); //Limit of 400 characters due to the limit of the UDP packet.
                 ev.Request.Reject(writer);
                 return;
             }

@@ -53,7 +53,7 @@ namespace VPNShield
                     case 1:
                         {
                             if (plugin.Config.VerboseMode)
-                                Log.Info(ipAddress + " (" + userID + ") is a detectable VPN. Kicking..");
+                                Log.Info($"{ipAddress} ({userID}) is a detectable VPN. Kicking..");
 
                             BlackListAdd(ipAddress);
                             return true;

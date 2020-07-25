@@ -15,10 +15,10 @@ namespace VPNShield
         public Account Account;
         public VPN VPN;
 
-        public override string Name { get; } = "VPNShield";
+        public override string Name { get; } = "VPNShield EXILED Edition";
         public override string Author { get; } = "SomewhatSane";
         public override string Prefix { get; } = "vs";
-        public override Version RequiredExiledVersion { get; } = new Version("2.0.0");
+        public override Version RequiredExiledVersion { get; } = new Version("2.0.7");
         public override PluginPriority Priority { get; } = PluginPriority.Highest;
 
         public static readonly string exiledPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Plugins");
@@ -30,17 +30,15 @@ namespace VPNShield
         public static readonly HashSet<string> checksWhitelistedUserIDs = new HashSet<string>();
 
 
-        internal const string version = "2.0.0";
-        internal const string lastModifed = "2020/07/14 20:45 UTC";
+        internal const string version = "2.0.1";
+        internal const string lastModifed = "2020/07/25 09:48 UTC";
 
 
         public override void OnEnabled()
         {
-            base.OnEnabled();
-
             if (!Config.IsEnabled) return;
 
-            Log.Info($"VPNShield EXILED Edition v{version} by SomewhatSane. Last Modified: {lastModifed}.");
+            Log.Info($"{Name} v{version} by {Author}. Last Modified: {lastModifed}.");
 
             Log.Info("Loading base scripts.");
             Account = new Account(this);
@@ -74,8 +72,6 @@ namespace VPNShield
 
         public override void OnDisabled()
         {
-            base.OnDisabled();
-
             PlayerEvents.PreAuthenticating -= EventHandlers.PreAuthenticating;
             PlayerEvents.Joined -= EventHandlers.Joined;
             ServerEvents.RoundEnded -= EventHandlers.RoundEnded;
