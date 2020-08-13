@@ -21,7 +21,7 @@ namespace VPNShield
         public override Version RequiredExiledVersion { get; } = new Version("2.0.13");
         public override PluginPriority Priority { get; } = PluginPriority.Highest;
 
-        public static readonly string exiledPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EXILED/Plugins");
+        public static readonly string exiledPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Plugins");
 
 
         public static readonly HashSet<IPAddress> vpnWhitelistedIPs = new HashSet<IPAddress>();
