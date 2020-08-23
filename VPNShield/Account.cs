@@ -32,9 +32,10 @@ namespace VPNShield
                         HttpResponseMessage webRequest = await client.GetAsync("https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=" + plugin.Config.SteamApiKey + "&steamids=" + split[0]);
                         if (!webRequest.IsSuccessStatusCode)
                         {
+                            string errorResponse = await webRequest.Content.ReadAsStringAsync();
                             Log.Error(webRequest.StatusCode == (HttpStatusCode)429
                                 ? "Steam account check could not complete. You have reached your API key's limit."
-                                : $"Steam API connection error: {webRequest.StatusCode} - {webRequest.Content.ReadAsStringAsync()}");
+                                : $"Steam API connection error: {webRequest.StatusCode} - {errorResponse}");
                             return false;
                         }
 

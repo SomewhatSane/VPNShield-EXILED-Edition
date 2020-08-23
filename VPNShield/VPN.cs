@@ -27,9 +27,10 @@ namespace VPNShield
 
                 if (!webRequest.IsSuccessStatusCode)
                 {
+                    string errorResponse = await webRequest.Content.ReadAsStringAsync();
                     Log.Error(webRequest.StatusCode == (HttpStatusCode)429
                         ? "VPN check could not complete. You have reached your API key's limit."
-                        : $"VPN API connection error: {webRequest.StatusCode} - {webRequest.Content.ReadAsStringAsync()}");
+                        : $"VPN API connection error: {webRequest.StatusCode} - {errorResponse}");
                     return false;
                 }
 
