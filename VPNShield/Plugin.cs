@@ -30,8 +30,8 @@ namespace VPNShield
         public static readonly HashSet<string> checksWhitelistedUserIDs = new HashSet<string>();
 
 
-        internal const string version = "2.0.4";
-        internal const string lastModifed = "2020/10/26 11:23 UTC";
+        internal const string version = "2.0.5";
+        internal const string lastModifed = "2021/01/03 01:56 UTC";
 
 
         public override void OnEnabled()
