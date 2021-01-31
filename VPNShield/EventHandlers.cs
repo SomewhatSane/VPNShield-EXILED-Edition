@@ -66,7 +66,7 @@ namespace VPNShield
             _ = Check(ev); //Do checks on in task to prevent holding up the game.
         }
 
-        public void Joined(JoinedEventArgs ev)
+        public void Verified(VerifiedEventArgs ev)
         {
             if (!ToKick.TryGetValue(new PlayerToKick(ev.Player.UserId, KickReason.Account),
                 out PlayerToKick tk))

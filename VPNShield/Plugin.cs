@@ -18,7 +18,7 @@ namespace VPNShield
         public override string Name { get; } = "VPNShield EXILED Edition";
         public override string Author { get; } = "SomewhatSane";
         public override string Prefix { get; } = "vs";
-        public override Version RequiredExiledVersion { get; } = new Version("2.1.9");
+        public override Version RequiredExiledVersion { get; } = new Version("2.1.29");
         public override PluginPriority Priority { get; } = PluginPriority.Highest;
 
         public static readonly string exiledPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EXILED/Plugins");
@@ -30,8 +30,8 @@ namespace VPNShield
         public static readonly HashSet<string> checksWhitelistedUserIDs = new HashSet<string>();
 
 
-        internal const string version = "2.0.5";
-        internal const string lastModifed = "2021/01/03 01:56 UTC";
+        internal const string version = "2.0.6";
+        internal const string lastModifed = "2021/01/31 12:08 UTC";
 
 
         public override void OnEnabled()
@@ -63,7 +63,7 @@ namespace VPNShield
 
             EventHandlers = new EventHandlers(this);
             PlayerEvents.PreAuthenticating += EventHandlers.PreAuthenticating;
-            PlayerEvents.Joined += EventHandlers.Joined;
+            PlayerEvents.Verified += EventHandlers.Verified;
             ServerEvents.RoundEnded += EventHandlers.RoundEnded;
             ServerEvents.WaitingForPlayers += EventHandlers.WaitingForPlayers;
 
@@ -72,8 +72,10 @@ namespace VPNShield
 
         public override void OnDisabled()
         {
+            if (!Config.IsEnabled) return;
+            
             PlayerEvents.PreAuthenticating -= EventHandlers.PreAuthenticating;
-            PlayerEvents.Joined -= EventHandlers.Joined;
+            PlayerEvents.Verified -= EventHandlers.Verified;
             ServerEvents.RoundEnded -= EventHandlers.RoundEnded;
             ServerEvents.WaitingForPlayers -= EventHandlers.WaitingForPlayers;
             EventHandlers = null;
