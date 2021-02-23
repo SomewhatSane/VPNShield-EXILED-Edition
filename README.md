@@ -13,7 +13,7 @@ Originally a port of VPNShield by KarlOfDuty.
 - `VPNShield-WhitelistAccountAgeCheck.txt` - Contains Steam IDs that have passed an account age check.
 - `VPNShield-WhitelistUserIDs.txt` - Contains SteamIDs that are allowed to bypass all checks.
 
-If you would like to whitelist a user from account and VPN checking, you can place a user ID in the form `STEAMID64@steam`, `DISCORDID@discord`, `staffmember@nothwood` or any other user ID that is supported by the Remote Admin configuration. If you make any changes to any files, you can reload the VPNShield cache by running `vs_reload` in Remote Admin or `/vs_reload` in console (restarting your server also works).
+To whitelist a user from account and VPN checking, you can place a user ID in the form `STEAMID64@steam`, `DISCORDID@discord`, `staffmember@nothwood` or any other user ID that is supported by the Remote Admin configuration. If you make any changes to any files, you can reload the VPNShield cache by running `vs_reload` in Remote Admin or `/vs_reload` in console (restarting your server also works).
 
 <h1>Support</h1>
 If you have any problems, you can contact me on Discord at SomewhatSane#0979.
