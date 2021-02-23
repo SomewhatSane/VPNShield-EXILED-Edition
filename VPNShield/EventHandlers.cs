@@ -26,13 +26,15 @@ namespace VPNShield
         {
             if (GlobalWhitelist.GlobalWhitelistCheck(ev.UserId))
             {
-                Log.Debug($"UserID {ev.UserId} ({ev.Request.RemoteEndPoint.Address}) is whitelisted from VPN and account age checks. Skipping checks.");
+                if (plugin.Config.VerboseMode)
+                    Log.Debug($"UserID {ev.UserId} ({ev.Request.RemoteEndPoint.Address}) is whitelisted from VPN and account age checks. Skipping checks.");
                 return;
             }
 
             if (ev.UserId.Contains("@northwood", StringComparison.InvariantCultureIgnoreCase))
             { 
-                Log.Debug($"UserID {ev.UserId} ({ev.Request.RemoteEndPoint.Address}) is a Northwood Studios member. Skipping checks.");
+                if (plugin.Config.VerboseMode)
+                    Log.Debug($"UserID {ev.UserId} ({ev.Request.RemoteEndPoint.Address}) is a Northwood Studios member. Skipping checks.");
                 return;
             }
 
@@ -40,11 +42,13 @@ namespace VPNShield
 
             if ((flags & BypassFlags) > 0)
             {
-                Log.Debug($"UserID {ev.UserId} ({ev.Request.RemoteEndPoint.Address}) has bypass flags (flags: {(int)flags}). Skipping checks.");
+                if (plugin.Config.VerboseMode)
+                    Log.Debug($"UserID {ev.UserId} ({ev.Request.RemoteEndPoint.Address}) has bypass flags (flags: {(int)flags}). Skipping checks.");
                 return;
             }
 
-            Log.Debug($"UserID {ev.UserId} ({ev.Request.RemoteEndPoint.Address}) doesn't have bypass flags (flags: {(int)flags}).");
+            if (plugin.Config.VerboseMode)
+                Log.Debug($"UserID {ev.UserId} ({ev.Request.RemoteEndPoint.Address}) doesn't have bypass flags (flags: {(int)flags}).");
 
             if (plugin.Config.VpnCheck && plugin.VPN.BlacklistedIPCheck(ev.Request.RemoteEndPoint.Address, ev.UserId))
             {
@@ -80,7 +84,8 @@ namespace VPNShield
             ToKick.Clear();
             stopwatch.Reset();
             cleanupStopwatch.Reset();
-            Log.Debug($"Cleared ToKick HashSet.");
+            if (plugin.Config.VerboseMode)
+                Log.Debug($"Cleared ToKick HashSet.");
         }
 
         public async Task Check(PreAuthenticatingEventArgs ev)
@@ -149,7 +154,8 @@ namespace VPNShield
 
             stopwatch.Start();
             cleanupStopwatch.Start();
-            Log.Debug($"Stopwatch started.");
+            if (plugin.Config.VerboseMode)
+                Log.Debug($"Stopwatch started.");
         }
     }
 }

@@ -11,7 +11,7 @@ namespace VPNShield
         [Description("Should account age checking be enabled?")]
         public bool AccountCheck { get; private set; } = false;
 
-        [Description("Should accounts that cannot be checked (eg, private Steam accounts) be kicked?")]
+        [Description("Should accounts that cannot be checked (eg. private Steam accounts) be kicked?")]
         public bool AccountKickPrivate { get; private set; } = true;
 
         [Description("Steam API key for account age checking.")]
@@ -34,5 +34,8 @@ namespace VPNShield
 
         [Description("Check for VPNShield updates on startup?")]
         public bool CheckForUpdates { get; private set; } = true;
+
+        [Description("Verbose mode. Prints more console messages.")]
+        public bool VerboseMode { get; private set; } = false;
     }
 }

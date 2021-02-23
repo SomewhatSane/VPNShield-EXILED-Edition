@@ -14,6 +14,8 @@ namespace VPNShield
 
         public async Task<bool> CheckVPN(IPAddress ipAddress, string userID) //A result of TRUE will kick.
         {
+
+
             if (BlacklistedIPCheck(ipAddress, userID))
                 return true; //Known VPN IPs.
 
@@ -44,14 +46,16 @@ namespace VPNShield
                     case 0:
                     case 2:
                         {
-                            Log.Debug($"{ipAddress} ({userID}) is not a detectable VPN.");
+                            if (plugin.Config.VerboseMode)
+                                Log.Debug($"{ipAddress} ({userID}) is not a detectable VPN.");
                             WhitelistAdd(ipAddress);
                             return false;
                         }
 
                     case 1:
                         { 
-                            Log.Debug($"{ipAddress} ({userID}) is a detectable VPN. Kicking..");
+                            if (plugin.Config.VerboseMode)
+                                Log.Debug($"{ipAddress} ({userID}) is a detectable VPN. Kicking..");
                             BlackListAdd(ipAddress);
                             return true;
                         }
@@ -79,7 +83,8 @@ namespace VPNShield
         {
             if (!Plugin.vpnWhitelistedIPs.Contains(ipAddress))
                 return false;
-            Log.Debug($"{ipAddress} ({userID}) has already passed a VPN check / is whitelisted.");
+            if (plugin.Config.VerboseMode)
+                Log.Debug($"{ipAddress} ({userID}) has already passed a VPN check / is whitelisted.");
             return true;
         }
 
@@ -87,7 +92,8 @@ namespace VPNShield
         {
             if (!Plugin.vpnBlacklistedIPs.Contains(ipAddress))
                 return false;
-            Log.Debug($"{ipAddress} ({userID}) is already known as a VPN / is blacklisted. Kicking.");
+            if (plugin.Config.VerboseMode)
+                Log.Debug($"{ipAddress} ({userID}) is already known as a VPN / is blacklisted. Kicking.");
             return true;
         }
     }

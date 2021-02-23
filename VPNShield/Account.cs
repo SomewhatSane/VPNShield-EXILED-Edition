@@ -46,7 +46,8 @@ namespace VPNShield
 
                         if (plugin.Config.AccountKickPrivate && communityvisibilitystate == 1)
                         {
-                            Log.Debug($"UserID {userID} ({ipAddress}) cannot have their account age checked due to their privacy settings. Kicking..");
+                            if (plugin.Config.VerboseMode)
+                                Log.Debug($"UserID {userID} ({ipAddress}) cannot have their account age checked due to their privacy settings. Kicking..");
                             return true;
                         }
 
@@ -56,11 +57,13 @@ namespace VPNShield
 
                         if (accountAge < plugin.Config.SteamMinAge)
                         {
-                            Log.Debug($"UserID {userID} ({ipAddress}) is too young to be on this server (account is {accountAge} day(s) old). Kicking..");
+                            if (plugin.Config.VerboseMode)
+                                Log.Debug($"UserID {userID} ({ipAddress}) is too young to be on this server (account is {accountAge} day(s) old). Kicking..");
                             return true;
                         }
 
-                        Log.Debug($"UserID {userID} ({ipAddress}) is old enough to be on this server (account is {accountAge} day(s) old).");
+                        if (plugin.Config.VerboseMode)
+                            Log.Debug($"UserID {userID} ({ipAddress}) is old enough to be on this server (account is {accountAge} day(s) old).");
 
                         WhitelistAdd(userID);
                         return false;
@@ -79,7 +82,8 @@ namespace VPNShield
         {
             if (!Plugin.accountWhitelistedUserIDs.Contains(userID))
                 return false;
-            Log.Debug($"UserID {userID} ({ipAddress}) is already known to be old enough. Skipping account age check.");
+            if (plugin.Config.VerboseMode)
+                Log.Debug($"UserID {userID} ({ipAddress}) is already known to be old enough. Skipping account age check.");
             return true;
         }
 

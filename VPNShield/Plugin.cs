@@ -1,5 +1,4 @@
-﻿using Exiled.API.Enums;
-using Exiled.API.Features;
+﻿using Exiled.API.Features;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -30,7 +29,7 @@ namespace VPNShield
 
 
         internal const string version = "2.0.7";
-        internal const string lastModifed = "2021/02/23 18:04 UTC";
+        internal const string lastModifed = "2021/02/23 20:34 UTC";
 
 
         public override void OnEnabled()
