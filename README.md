@@ -6,7 +6,7 @@ Originally a port of VPNShield by KarlOfDuty.
 <p>Extract VPNShield.dll to /EXILED/Plugins/ and Newtonsoft.Json.dll to /EXILED/Plugins/dependencies/
 
 <h1>Configuration</h1>
-<p>After starting up the plugin for the first time, a folder named VPNShield will be created in your plugins folder. This contains the main whitelists and blacklists that VPNShield uses for caching known good and bad IPs / accounts. The folder will contain 4 files:
+<p>After starting up the plugin for the first time, a folder named VPNShield will be created in your plugins folder which contains whitelists and blacklists that VPNShield uses for caching known good and bad IPs / accounts. The folder will contain 4 files:
 
 - `VPNShield-WhitelistIPs.txt` - Contains IPs that have passed an IP check.
 - `VPNShield-BlacklistIPs.txt` - Contains IPs that have failed an IP check.
