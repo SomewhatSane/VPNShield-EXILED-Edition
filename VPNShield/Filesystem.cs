@@ -4,7 +4,7 @@ using System.Net;
 
 namespace VPNShield
 {
-    public class Filesystem
+    public static class Filesystem
     {
         public static void CheckFileSystem()
         {

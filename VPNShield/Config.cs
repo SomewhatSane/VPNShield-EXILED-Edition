@@ -1,5 +1,4 @@
-﻿using Exiled.API.Features;
-using Exiled.API.Interfaces;
+﻿using Exiled.API.Interfaces;
 using System.ComponentModel;
 
 namespace VPNShield
@@ -33,18 +32,7 @@ namespace VPNShield
         [Description("Message shown to players who are kicked by a VPN check.")]
         public string VpnKickMessage { get; private set; } = "VPNs and proxies are forbidden on this server.";
 
-        [Description("Verbose mode. Prints more console messages with detailed information.")]
-        public bool VerboseMode { get; private set; } = false;
-
         [Description("Check for VPNShield updates on startup?")]
         public bool CheckForUpdates { get; private set; } = true;
-
-        public void ConfigValidator()
-        {
-            if (VerboseMode)
-                Log.Info("Verbose mode is enabled.");
-
-            Log.Info("Configuration loaded and validated.");
-        }
     }
 }

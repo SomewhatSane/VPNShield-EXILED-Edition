@@ -42,20 +42,16 @@ namespace VPNShield
                 switch (block)
                 {
                     case 0:
-                    case 2: //2 is for unknown calls from the API. Strange.
+                    case 2:
                         {
-                            if (plugin.Config.VerboseMode)
-                                Log.Info($"{ipAddress} ({userID}) is not a detectable VPN.");
-
+                            Log.Debug($"{ipAddress} ({userID}) is not a detectable VPN.");
                             WhitelistAdd(ipAddress);
                             return false;
                         }
 
                     case 1:
-                        {
-                            if (plugin.Config.VerboseMode)
-                                Log.Info($"{ipAddress} ({userID}) is a detectable VPN. Kicking..");
-
+                        { 
+                            Log.Debug($"{ipAddress} ({userID}) is a detectable VPN. Kicking..");
                             BlackListAdd(ipAddress);
                             return true;
                         }
@@ -83,10 +79,7 @@ namespace VPNShield
         {
             if (!Plugin.vpnWhitelistedIPs.Contains(ipAddress))
                 return false;
-
-            if (plugin.Config.VerboseMode)
-                Log.Info($"{ipAddress} ({userID}) has already passed a VPN check / is whitelisted.");
-
+            Log.Debug($"{ipAddress} ({userID}) has already passed a VPN check / is whitelisted.");
             return true;
         }
 
@@ -94,10 +87,7 @@ namespace VPNShield
         {
             if (!Plugin.vpnBlacklistedIPs.Contains(ipAddress))
                 return false;
-
-            if (plugin.Config.VerboseMode)
-                Log.Info($"{ipAddress} ({userID}) is already known as a VPN / is blacklisted. Kicking.");
-
+            Log.Debug($"{ipAddress} ({userID}) is already known as a VPN / is blacklisted. Kicking.");
             return true;
         }
     }

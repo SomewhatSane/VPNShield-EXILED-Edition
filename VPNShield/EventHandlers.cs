@@ -26,17 +26,13 @@ namespace VPNShield
         {
             if (GlobalWhitelist.GlobalWhitelistCheck(ev.UserId))
             {
-                if (plugin.Config.VerboseMode)
-                    Log.Info($"UserID {ev.UserId} ({ev.Request.RemoteEndPoint.Address}) is whitelisted from VPN and account age checks. Skipping checks.");
-
+                Log.Debug($"UserID {ev.UserId} ({ev.Request.RemoteEndPoint.Address}) is whitelisted from VPN and account age checks. Skipping checks.");
                 return;
             }
 
             if (ev.UserId.Contains("@northwood", StringComparison.InvariantCultureIgnoreCase))
-            {
-                if (plugin.Config.VerboseMode)
-                    Log.Info($"UserID {ev.UserId} ({ev.Request.RemoteEndPoint.Address}) is a Northwood Studios member. Skipping checks.");
-
+            { 
+                Log.Debug($"UserID {ev.UserId} ({ev.Request.RemoteEndPoint.Address}) is a Northwood Studios member. Skipping checks.");
                 return;
             }
 
@@ -44,15 +40,11 @@ namespace VPNShield
 
             if ((flags & BypassFlags) > 0)
             {
-                if (plugin.Config.VerboseMode)
-                    Log.Info($"UserID {ev.UserId} ({ev.Request.RemoteEndPoint.Address}) has bypass flags (flags: {(int)flags}). Skipping checks.");
+                Log.Debug($"UserID {ev.UserId} ({ev.Request.RemoteEndPoint.Address}) has bypass flags (flags: {(int)flags}). Skipping checks.");
                 return;
             }
-            else
-            {
-                if (plugin.Config.VerboseMode)
-                    Log.Info($"UserID {ev.UserId} ({ev.Request.RemoteEndPoint.Address}) doesn't have bypass flags (flags: {(int)flags}).");
-            }
+
+            Log.Debug($"UserID {ev.UserId} ({ev.Request.RemoteEndPoint.Address}) doesn't have bypass flags (flags: {(int)flags}).");
 
             if (plugin.Config.VpnCheck && plugin.VPN.BlacklistedIPCheck(ev.Request.RemoteEndPoint.Address, ev.UserId))
             {
@@ -77,14 +69,18 @@ namespace VPNShield
                 tk.reason == KickReason.VPN ? plugin.Config.VpnKickMessage : plugin.Config.AccountCheckKickMessage);
         }
 
+        public void WaitingForPlayers()
+        {
+            Filesystem.CheckFileSystem();
+            Filesystem.LoadData();
+        }
+
         public void RoundEnded(RoundEndedEventArgs ev)
         {
             ToKick.Clear();
             stopwatch.Reset();
             cleanupStopwatch.Reset();
-
-            if (plugin.Config.VerboseMode)
-                Log.Info($"Cleared ToKick HashSet.");
+            Log.Debug($"Cleared ToKick HashSet.");
         }
 
         public async Task Check(PreAuthenticatingEventArgs ev)
@@ -125,12 +121,6 @@ namespace VPNShield
             //Else, let them continue.
         }
 
-        public void WaitingForPlayers()
-        {
-            Filesystem.CheckFileSystem();
-            Filesystem.LoadData();
-        }
-
         public void StartStopwatch()
         {
             if (stopwatch.IsRunning)
@@ -159,10 +149,7 @@ namespace VPNShield
 
             stopwatch.Start();
             cleanupStopwatch.Start();
-            if (plugin.Config.VerboseMode)
-            {
-                Log.Info($"Stopwatch started.");
-            }
+            Log.Debug($"Stopwatch started.");
         }
     }
 }

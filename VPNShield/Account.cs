@@ -43,29 +43,24 @@ namespace VPNShield
                         JObject json = JObject.Parse(apiResponse);
 
                         int communityvisibilitystate = (int)json["response"]["players"][0]["communityvisibilitystate"];
+
                         if (plugin.Config.AccountKickPrivate && communityvisibilitystate == 1)
                         {
-                            if (plugin.Config.VerboseMode)
-                                Log.Info($"UserID {userID} ({ipAddress}) cannot have their account age checked due to their privacy settings. Kicking..");
-
+                            Log.Debug($"UserID {userID} ({ipAddress}) cannot have their account age checked due to their privacy settings. Kicking..");
                             return true;
                         }
 
                         int timecreated = (int)json["response"]["players"][0]["timecreated"];
                         DateTime creationDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(timecreated);
-
                         int accountAge = (int)(DateTime.Today - creationDateTime).TotalDays;
 
                         if (accountAge < plugin.Config.SteamMinAge)
                         {
-                            if (plugin.Config.VerboseMode)
-                                Log.Info($"UserID {userID} ({ipAddress}) is too young to be on this server (account is {accountAge} day(s) old). Kicking..");
-
+                            Log.Debug($"UserID {userID} ({ipAddress}) is too young to be on this server (account is {accountAge} day(s) old). Kicking..");
                             return true;
                         }
 
-                        if (plugin.Config.VerboseMode)
-                            Log.Info($"UserID {userID} ({ipAddress}) is old enough to be on this server (account is {accountAge} day(s) old).");
+                        Log.Debug($"UserID {userID} ({ipAddress}) is old enough to be on this server (account is {accountAge} day(s) old).");
 
                         WhitelistAdd(userID);
                         return false;
@@ -84,10 +79,7 @@ namespace VPNShield
         {
             if (!Plugin.accountWhitelistedUserIDs.Contains(userID))
                 return false;
-
-            if (plugin.Config.VerboseMode)
-                Log.Info($"UserID {userID} ({ipAddress}) is already known to be old enough. Skipping account age check.");
-
+            Log.Debug($"UserID {userID} ({ipAddress}) is already known to be old enough. Skipping account age check.");
             return true;
         }
 

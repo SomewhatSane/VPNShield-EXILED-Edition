@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace VPNShield
 {
-    public class UpdateCheck
+    public static class UpdateCheck
     {
         public static async Task CheckForUpdate()
         {

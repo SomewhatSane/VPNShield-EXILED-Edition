@@ -18,8 +18,7 @@ namespace VPNShield
         public override string Name { get; } = "VPNShield EXILED Edition";
         public override string Author { get; } = "SomewhatSane";
         public override string Prefix { get; } = "vs";
-        public override Version RequiredExiledVersion { get; } = new Version("2.1.29");
-        public override PluginPriority Priority { get; } = PluginPriority.Highest;
+        public override Version RequiredExiledVersion { get; } = new Version("2.3.3");
 
         public static readonly string exiledPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EXILED/Plugins");
 
@@ -30,14 +29,12 @@ namespace VPNShield
         public static readonly HashSet<string> checksWhitelistedUserIDs = new HashSet<string>();
 
 
-        internal const string version = "2.0.6";
-        internal const string lastModifed = "2021/01/31 12:08 UTC";
+        internal const string version = "2.0.7";
+        internal const string lastModifed = "2021/02/23 18:04 UTC";
 
 
         public override void OnEnabled()
-        {
-            if (!Config.IsEnabled) return;
-
+        { 
             Log.Info($"{Name} v{version} by {Author}. Last Modified: {lastModifed}.");
 
             Log.Info("Loading base scripts.");
@@ -49,9 +46,6 @@ namespace VPNShield
                 Log.Info("Checking for update.");
                 _ = UpdateCheck.CheckForUpdate();
             }
-
-            Log.Info("Running configuration validator.");
-            Config.ConfigValidator();
 
             Log.Info("Checking file system.");
             Filesystem.CheckFileSystem();
@@ -73,7 +67,7 @@ namespace VPNShield
         public override void OnDisabled()
         {
             if (!Config.IsEnabled) return;
-            
+
             PlayerEvents.PreAuthenticating -= EventHandlers.PreAuthenticating;
             PlayerEvents.Verified -= EventHandlers.Verified;
             ServerEvents.RoundEnded -= EventHandlers.RoundEnded;
@@ -85,7 +79,5 @@ namespace VPNShield
 
             Log.Info("Disabled.");
         }
-
-        public override void OnReloaded() { }
     }
 }
