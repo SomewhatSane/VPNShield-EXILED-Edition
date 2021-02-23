@@ -2,7 +2,7 @@
 VPNShield EXILED Edition - A VPN Blocking Plugin for EXILED SCPSL servers. Originally a port of VPNShield by KarlOfDuty.
 
 <h1>Installation</h1>
-<p>Installation is simple. From the release zip, extract VPNShield.dll into your plugins folder and Newtonsoft.Json.dll into the dependencies folder inside of the plugins folder.
+<p>Extract VPNShield.dll to /EXILED/Plugins/ and Newtonsoft.Json.dll to /EXILED/Plugins/dependencies/
 
 <h1>Configuration</h1>
 <p>After starting up the plugin for the first time, a folder named VPNShield will be created in your plugins folder. This contains the main whitelists and blacklists that VPNShield uses for caching known good and bad IPs / accounts. The folder will contain 4 files:
