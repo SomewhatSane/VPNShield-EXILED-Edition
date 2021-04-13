@@ -16,7 +16,7 @@ namespace VPNShield.Commands
             Filesystem.CheckFileSystem();
             Filesystem.LoadData();
 
-            response = "Reloaded VPNShield.";
+            response = "Reloaded VPNShield's data.";
             return true;
         }
     }

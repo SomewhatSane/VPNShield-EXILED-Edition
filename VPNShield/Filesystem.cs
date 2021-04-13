@@ -8,34 +8,34 @@ namespace VPNShield
     {
         public static void CheckFileSystem()
         {
-            if (!Directory.Exists(Plugin.exiledPath + "/VPNShield"))
+            if (!Directory.Exists($"{Plugin.exiledPath}/VPNShield"))
             {
-                Log.Warn(Plugin.exiledPath + "/VPNShield directory does not exist. Creating.");
-                Directory.CreateDirectory(Plugin.exiledPath + "/VPNShield");
+                Log.Warn($"{Plugin.exiledPath}/VPNShield directory does not exist. Creating.");
+                Directory.CreateDirectory($"{Plugin.exiledPath}/VPNShield");
             }
 
-            if (!File.Exists(Plugin.exiledPath + "/VPNShield/VPNShield-WhitelistIPs.txt"))
+            if (!File.Exists($"{Plugin.exiledPath}/VPNShield/VPNShield-WhitelistIPs.txt"))
             {
-                Log.Warn(Plugin.exiledPath + "/VPNShield/VPNShield-WhitelistIPs.txt does not exist. Creating.");
-                File.WriteAllText(Plugin.exiledPath + "/VPNShield/VPNShield-WhitelistIPs.txt", null);
+                Log.Warn($"{Plugin.exiledPath}/VPNShield/VPNShield-WhitelistIPs.txt does not exist. Creating.");
+                File.WriteAllText($"{Plugin.exiledPath}/VPNShield/VPNShield-WhitelistIPs.txt", null);
             }
 
-            if (!File.Exists(Plugin.exiledPath + "/VPNShield/VPNShield-BlacklistIPs.txt"))
+            if (!File.Exists($"{Plugin.exiledPath}/VPNShield/VPNShield-BlacklistIPs.txt"))
             {
-                Log.Warn(Plugin.exiledPath + "/VPNShield/VPNShield-BlacklistIPs.txt does not exist. Creating.");
-                File.WriteAllText(Plugin.exiledPath + "/VPNShield/VPNShield-BlacklistIPs.txt", null);
+                Log.Warn($"{Plugin.exiledPath}/VPNShield/VPNShield-BlacklistIPs.txt does not exist. Creating.");
+                File.WriteAllText($"{Plugin.exiledPath}/VPNShield/VPNShield-BlacklistIPs.txt", null);
             }
 
-            if (!File.Exists(Plugin.exiledPath + "/VPNShield/VPNShield-WhitelistUserIDs.txt"))
+            if (!File.Exists($"{Plugin.exiledPath}/VPNShield/VPNShield-WhitelistUserIDs.txt"))
             {
-                Log.Warn(Plugin.exiledPath + "/VPNShield/VPNShield-WhitelistUserIDs.txt does not exist. Creating.");
-                File.WriteAllText(Plugin.exiledPath + "/VPNShield/VPNShield-WhitelistUserIDs.txt", null);
+                Log.Warn($"{Plugin.exiledPath}/VPNShield/VPNShield-WhitelistUserIDs.txt does not exist. Creating.");
+                File.WriteAllText($"{Plugin.exiledPath}/VPNShield/VPNShield-WhitelistUserIDs.txt", null);
             }
 
-            if (!File.Exists(Plugin.exiledPath + "/VPNShield/VPNShield-WhitelistAccountAgeCheck.txt"))
+            if (!File.Exists($"{Plugin.exiledPath}/VPNShield/VPNShield-WhitelistAccountAgeCheck.txt"))
             {
-                Log.Warn(Plugin.exiledPath + "/VPNShield/VPNShield-WhitelistAccountAgeCheck.txt does not exist. Creating.");
-                File.WriteAllText(Plugin.exiledPath + "/VPNShield/VPNShield-WhitelistAccountAgeCheck.txt", null);
+                Log.Warn($"{Plugin.exiledPath}/VPNShield/VPNShield-WhitelistAccountAgeCheck.txt does not exist. Creating.");
+                File.WriteAllText($"{Plugin.exiledPath}/VPNShield/VPNShield-WhitelistAccountAgeCheck.txt", null);
             }
 
             Log.Info($"File system check complete. Working directory is: {Plugin.exiledPath}/VPNShield.");
@@ -48,22 +48,22 @@ namespace VPNShield
             Plugin.accountWhitelistedUserIDs.Clear();
             Plugin.checksWhitelistedUserIDs.Clear();
 
-            foreach (string ip in FileManager.ReadAllLines(Plugin.exiledPath + "/VPNShield/VPNShield-WhitelistIPs.txt"))
+            foreach (string ip in FileManager.ReadAllLines($"{Plugin.exiledPath}/VPNShield/VPNShield-WhitelistIPs.txt"))
             {
                 if (IPAddress.TryParse(ip, out IPAddress addr))
                     Plugin.vpnWhitelistedIPs.Add(addr);
             }
 
-            foreach (string ip in FileManager.ReadAllLines(Plugin.exiledPath + "/VPNShield/VPNShield-BlacklistIPs.txt"))
+            foreach (string ip in FileManager.ReadAllLines($"{Plugin.exiledPath}/VPNShield/VPNShield-BlacklistIPs.txt"))
             {
                 if (IPAddress.TryParse(ip, out IPAddress addr))
                     Plugin.vpnBlacklistedIPs.Add(addr);
             }
 
-            foreach (string id in FileManager.ReadAllLines(Plugin.exiledPath + "/VPNShield/VPNShield-WhitelistAccountAgeCheck.txt"))
+            foreach (string id in FileManager.ReadAllLines($"{Plugin.exiledPath}/VPNShield/VPNShield-WhitelistAccountAgeCheck.txt"))
                 Plugin.accountWhitelistedUserIDs.Add(id);
 
-            foreach (string id in FileManager.ReadAllLines(Plugin.exiledPath + "/VPNShield/VPNShield-WhitelistUserIDs.txt"))
+            foreach (string id in FileManager.ReadAllLines($"{Plugin.exiledPath}/VPNShield/VPNShield-WhitelistUserIDs.txt"))
                 Plugin.checksWhitelistedUserIDs.Add(id);
 
             Log.Info("Data loaded.");

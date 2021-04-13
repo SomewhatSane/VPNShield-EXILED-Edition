@@ -1,9 +1,10 @@
 ﻿using Exiled.API.Features;
-using Newtonsoft.Json.Linq;
 using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using VPNShield.Objects;
+using Utf8Json;
 
 namespace VPNShield
 {
@@ -11,55 +12,64 @@ namespace VPNShield
     {
         private readonly Plugin plugin;
         public VPN(Plugin plugin) => this.plugin = plugin;
+        private readonly HttpClient client = new HttpClient();
 
         public async Task<bool> CheckVPN(IPAddress ipAddress, string userID) //A result of TRUE will kick.
         {
-
-
             if (BlacklistedIPCheck(ipAddress, userID))
                 return true; //Known VPN IPs.
 
             if (WhitelistedIPCheck(ipAddress, userID))
                 return false; //Known good IPs. Else..
 
-            using (HttpClient client = new HttpClient())
-            {
+            if (!client.DefaultRequestHeaders.Contains("x-key"))   
                 client.DefaultRequestHeaders.Add("x-key", plugin.Config.IpHubApiKey);
-                HttpResponseMessage webRequest = await client.GetAsync("https://v2.api.iphub.info/ip/" + ipAddress);
 
-                if (!webRequest.IsSuccessStatusCode)
-                {
-                    string errorResponse = await webRequest.Content.ReadAsStringAsync();
-                    Log.Error(webRequest.StatusCode == (HttpStatusCode)429
-                        ? "VPN check could not complete. You have reached your API key's limit."
-                        : $"VPN API connection error: {webRequest.StatusCode} - {errorResponse}");
-                    return false;
-                }
+            HttpResponseMessage webRequest = await client.GetAsync($"https://v2.api.iphub.info/ip/{ipAddress}");
 
-                string apiResponse = await webRequest.Content.ReadAsStringAsync();
+            if (!webRequest.IsSuccessStatusCode)
+            {
+                string errorResponse = await webRequest.Content.ReadAsStringAsync();
+                Log.Error(webRequest.StatusCode == (HttpStatusCode)429
+                    ? "VPN check could not complete. You have reached your API key's limit."
+                    : $"VPN API connection error: {webRequest.StatusCode} - {errorResponse}");
+                return false;
+            }
 
-                JObject json = JObject.Parse(apiResponse);
-                int block = json.Value<int>("block");
+            string apiResponse = await webRequest.Content.ReadAsStringAsync();
+            IpHubApiResponse ipHubApiResponse = JsonSerializer.Deserialize<IpHubApiResponse>(apiResponse);
 
-                switch (block)
-                {
-                    case 0:
-                    case 2:
+            switch (ipHubApiResponse.block)
+            {
+                case 0:
+                    {
+                        if (plugin.Config.VerboseMode)
+                            Log.Debug($"{ipAddress} ({userID}) is not a detectable VPN.");
+                        WhitelistAdd(ipAddress);
+                        return false;
+                    }
+
+                case 1:
+                    { 
+                        if (plugin.Config.VerboseMode)
+                            Log.Debug($"{ipAddress} ({userID}) is a detectable VPN. Kicking..");
+                        BlacklistAdd(ipAddress);
+                        return true;
+                    }
+                case 2:
+                    {
+                        if (plugin.Config.StrictBlocking)
                         {
                             if (plugin.Config.VerboseMode)
-                                Log.Debug($"{ipAddress} ({userID}) is not a detectable VPN.");
-                            WhitelistAdd(ipAddress);
-                            return false;
-                        }
-
-                    case 1:
-                        { 
-                            if (plugin.Config.VerboseMode)
-                                Log.Debug($"{ipAddress} ({userID}) is a detectable VPN. Kicking..");
-                            BlackListAdd(ipAddress);
+                                Log.Debug($"{ipAddress} ({userID}) is a detectable VPN (detected by strict blocking). Kicking..");
+                            BlacklistAdd(ipAddress);
                             return true;
                         }
-                }
+                        if (plugin.Config.VerboseMode)
+                            Log.Debug($"{ipAddress} ({userID}) is not a detectable VPN.");
+                        WhitelistAdd(ipAddress);
+                        return false;
+                    }
             }
 
             return false;
@@ -68,14 +78,14 @@ namespace VPNShield
         private static void WhitelistAdd(IPAddress ipAddress)
         {
             Plugin.vpnWhitelistedIPs.Add(ipAddress);
-            using (StreamWriter whitelist = File.AppendText(Plugin.exiledPath + "/VPNShield/VPNShield-WhitelistIPs.txt"))
+            using (StreamWriter whitelist = File.AppendText($"{Plugin.exiledPath}/VPNShield/VPNShield-WhitelistIPs.txt"))
                 whitelist.WriteLine(ipAddress);
         }
 
-        private static void BlackListAdd(IPAddress ipAddress)
+        private static void BlacklistAdd(IPAddress ipAddress)
         {
             Plugin.vpnBlacklistedIPs.Add(ipAddress);
-            using (StreamWriter blacklist = File.AppendText(Plugin.exiledPath + "/VPNShield/VPNShield-BlacklistIPs.txt"))
+            using (StreamWriter blacklist = File.AppendText($"{Plugin.exiledPath}/VPNShield/VPNShield-BlacklistIPs.txt"))
                 blacklist.WriteLine(ipAddress);
         }
 

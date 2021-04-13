@@ -17,10 +17,9 @@ namespace VPNShield
         public override string Name { get; } = "VPNShield EXILED Edition";
         public override string Author { get; } = "SomewhatSane";
         public override string Prefix { get; } = "vs";
-        public override Version RequiredExiledVersion { get; } = new Version("2.3.3");
+        public override Version RequiredExiledVersion { get; } = new Version("2.8.0");
 
         public static readonly string exiledPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EXILED/Plugins");
-
 
         public static readonly HashSet<IPAddress> vpnWhitelistedIPs = new HashSet<IPAddress>();
         public static readonly HashSet<IPAddress> vpnBlacklistedIPs = new HashSet<IPAddress>();
@@ -28,23 +27,20 @@ namespace VPNShield
         public static readonly HashSet<string> checksWhitelistedUserIDs = new HashSet<string>();
 
 
-        internal const string version = "2.0.7";
-        internal const string lastModifed = "2021/02/23 20:34 UTC";
+        internal const string version = "2.1.0";
+        internal const string lastModifed = "2021/04/13 19:56 UTC";
 
 
         public override void OnEnabled()
         { 
-            Log.Info($"{Name} v{version} by {Author}. Last Modified: {lastModifed}.");
+            Log.Info($"{Name} v{version} by {Author}. Last modified: {lastModifed}.");
 
             Log.Info("Loading base scripts.");
             Account = new Account(this);
             VPN = new VPN(this);
 
             if (Config.CheckForUpdates)
-            {
-                Log.Info("Checking for update.");
                 _ = UpdateCheck.CheckForUpdate();
-            }
 
             Log.Info("Checking file system.");
             Filesystem.CheckFileSystem();

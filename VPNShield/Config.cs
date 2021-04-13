@@ -17,7 +17,7 @@ namespace VPNShield
         [Description("Steam API key for account age checking.")]
         public string SteamApiKey { get; private set; } = null;
 
-        [Description("Minimum Steam account age (if account checking is enabled).")]
+        [Description("Minimum Steam account age (if account checking is enabled - in days).")]
         public int SteamMinAge { get; private set; } = 14;
 
         [Description("Message shown to players who are kicked by an account check.")]
@@ -26,8 +26,11 @@ namespace VPNShield
         [Description("Should VPN checking be enabled?")]
         public bool VpnCheck { get; private set; } = true;
 
-        [Description("IPHub.info API key for VPN checking.")]
+        [Description("IPHub API key for VPN checking. Get one for free at https://iphub.info .")]
         public string IpHubApiKey { get; private set; } = null;
+
+        [Description("Should strict blocking be enabled? Strict blocking will catch more VPN / hosting IP addresses but may cause false positives. It is generally recommended to keep this disabled.")]
+        public bool StrictBlocking { get; private set; } = false;
 
         [Description("Message shown to players who are kicked by a VPN check.")]
         public string VpnKickMessage { get; private set; } = "VPNs and proxies are forbidden on this server.";

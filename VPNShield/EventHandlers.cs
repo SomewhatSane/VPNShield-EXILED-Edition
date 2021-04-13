@@ -1,11 +1,11 @@
 ﻿using Exiled.API.Features;
 using Exiled.Events.EventArgs;
 using LiteNetLib.Utils;
+using NorthwoodLib;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using NorthwoodLib;
 
 namespace VPNShield
 {
@@ -85,7 +85,7 @@ namespace VPNShield
             stopwatch.Reset();
             cleanupStopwatch.Reset();
             if (plugin.Config.VerboseMode)
-                Log.Debug($"Cleared ToKick HashSet.");
+                Log.Debug("Cleared ToKick HashSet.");
         }
 
         public async Task Check(PreAuthenticatingEventArgs ev)
@@ -93,34 +93,52 @@ namespace VPNShield
             //Account check.
             if (plugin.Config.AccountCheck)
             {
-                if (await plugin.Account.CheckAccount(ev.Request.RemoteEndPoint.Address, ev.UserId))
+                if (!string.IsNullOrWhiteSpace(plugin.Config.SteamApiKey))
                 {
-                    Player player = Player.Get(ev.UserId);
-                    if (player != null)
-                        ServerConsole.Disconnect(player.Connection,
-                            plugin.Config.AccountCheckKickMessage);
-                    else
-                        StartStopwatch();
-                    ToKick.Add(new PlayerToKick(ev.UserId, KickReason.Account));
-                    return;
+                    if (await plugin.Account.CheckAccount(ev.Request.RemoteEndPoint.Address, ev.UserId))
+                    {
+                        Player player = Player.Get(ev.UserId);
+                        if (player != null)
+                            ServerConsole.Disconnect(player.Connection,
+                                plugin.Config.AccountCheckKickMessage);
+                        else
+                            StartStopwatch();
+                        ToKick.Add(new PlayerToKick(ev.UserId, KickReason.Account));
+                        return;
+                    }
                 }
+
+                else
+                {
+                    Log.Warn($"An account age check cannot be performed for {ev.UserId} ({ev.Request.RemoteEndPoint.Address}). Steam API key is null.");
+                }
+
             }
 
             //VPN Check.
             if (plugin.Config.VpnCheck)
             {
-                if (await plugin.VPN.CheckVPN(ev.Request.RemoteEndPoint.Address, ev.UserId))
+                if (!string.IsNullOrWhiteSpace(plugin.Config.IpHubApiKey))
                 {
-                    Player player = Player.Get(ev.UserId);
-                    if (player != null)
+                    if (await plugin.VPN.CheckVPN(ev.Request.RemoteEndPoint.Address, ev.UserId))
                     {
-                        ServerConsole.Disconnect(player.Connection,
-                            plugin.Config.VpnKickMessage);
+                        Player player = Player.Get(ev.UserId);
+                        if (player != null)
+                        {
+                            ServerConsole.Disconnect(player.Connection,
+                                plugin.Config.VpnKickMessage);
+                        }
+                        else
+                            StartStopwatch();
+                        ToKick.Add(new PlayerToKick(ev.UserId, KickReason.VPN));
                     }
-                    else
-                        StartStopwatch();
-                    ToKick.Add(new PlayerToKick(ev.UserId, KickReason.VPN));
                 }
+
+                else
+                {
+                    Log.Warn($"A VPN check cannot be performed for {ev.Request.RemoteEndPoint.Address} ({ev.UserId}). IPHub API key is null.");
+                }
+
             }
 
             //Else, let them continue.
@@ -155,7 +173,7 @@ namespace VPNShield
             stopwatch.Start();
             cleanupStopwatch.Start();
             if (plugin.Config.VerboseMode)
-                Log.Debug($"Stopwatch started.");
+                Log.Debug("Stopwatch started.");
         }
     }
 }
