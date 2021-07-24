@@ -12,7 +12,7 @@ namespace VPNShield
     {
         private readonly Plugin plugin;
         public VPN(Plugin plugin) => this.plugin = plugin;
-        private readonly HttpClient client = new HttpClient();
+        private readonly HttpClient client = new();
 
         public async Task<bool> CheckVPN(IPAddress ipAddress, string userID) //A result of TRUE will kick.
         {
@@ -78,15 +78,15 @@ namespace VPNShield
         private static void WhitelistAdd(IPAddress ipAddress)
         {
             Plugin.vpnWhitelistedIPs.Add(ipAddress);
-            using (StreamWriter whitelist = File.AppendText($"{Plugin.exiledPath}/VPNShield/VPNShield-WhitelistIPs.txt"))
-                whitelist.WriteLine(ipAddress);
+            using StreamWriter whitelist = File.AppendText($"{Plugin.exiledPath}/VPNShield/VPNShield-WhitelistIPs.txt");
+            whitelist.WriteLine(ipAddress);
         }
 
         private static void BlacklistAdd(IPAddress ipAddress)
         {
             Plugin.vpnBlacklistedIPs.Add(ipAddress);
-            using (StreamWriter blacklist = File.AppendText($"{Plugin.exiledPath}/VPNShield/VPNShield-BlacklistIPs.txt"))
-                blacklist.WriteLine(ipAddress);
+            using StreamWriter blacklist = File.AppendText($"{Plugin.exiledPath}/VPNShield/VPNShield-BlacklistIPs.txt");
+            blacklist.WriteLine(ipAddress);
         }
 
         private bool WhitelistedIPCheck(IPAddress ipAddress, string userID)

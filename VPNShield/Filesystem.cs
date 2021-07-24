@@ -38,14 +38,21 @@ namespace VPNShield
                 File.WriteAllText($"{Plugin.exiledPath}/VPNShield/VPNShield-WhitelistAccountAgeCheck.txt", null);
             }
 
-            Log.Info($"File system check complete. Working directory is: {Plugin.exiledPath}/VPNShield.");
+            if (!File.Exists($"{Plugin.exiledPath}/VPNShield/VPNShield-WhitelistAccountPlaytimeCheck.txt"))
+            {
+                Log.Warn($"{Plugin.exiledPath}/VPNShield/VPNShield-WhitelistAccountPlaytimeCheck.txt does not exist. Creating.");
+                File.WriteAllText($"{Plugin.exiledPath}/VPNShield/VPNShield-WhitelistAccountPlaytimeCheck.txt", null);
+            }
+
+            Log.Info($"File system check complete. Working directory is: {Path.Combine(Plugin.exiledPath, "VPNShield")}.");
         }
 
         public static void LoadData()
         {
             Plugin.vpnWhitelistedIPs.Clear();
             Plugin.vpnBlacklistedIPs.Clear();
-            Plugin.accountWhitelistedUserIDs.Clear();
+            Plugin.accountAgeWhitelistedUserIDs.Clear();
+            Plugin.accountPlaytimeWhitelistedUserIDs.Clear();
             Plugin.checksWhitelistedUserIDs.Clear();
 
             foreach (string ip in FileManager.ReadAllLines($"{Plugin.exiledPath}/VPNShield/VPNShield-WhitelistIPs.txt"))
@@ -60,11 +67,12 @@ namespace VPNShield
                     Plugin.vpnBlacklistedIPs.Add(addr);
             }
 
-            foreach (string id in FileManager.ReadAllLines($"{Plugin.exiledPath}/VPNShield/VPNShield-WhitelistAccountAgeCheck.txt"))
-                Plugin.accountWhitelistedUserIDs.Add(id);
-
             foreach (string id in FileManager.ReadAllLines($"{Plugin.exiledPath}/VPNShield/VPNShield-WhitelistUserIDs.txt"))
                 Plugin.checksWhitelistedUserIDs.Add(id);
+            foreach (string id in FileManager.ReadAllLines($"{Plugin.exiledPath}/VPNShield/VPNShield-WhitelistAccountAgeCheck.txt"))
+                Plugin.accountAgeWhitelistedUserIDs.Add(id);
+            foreach (string id in FileManager.ReadAllLines($"{Plugin.exiledPath}/VPNShield/VPNShield-WhitelistAccountPlaytimeCheck.txt"))
+                Plugin.accountPlaytimeWhitelistedUserIDs.Add(id);
 
             Log.Info("Data loaded.");
         }

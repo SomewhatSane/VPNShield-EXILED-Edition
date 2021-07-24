@@ -4,7 +4,8 @@ namespace VPNShield
 {
     internal enum KickReason : byte
     {
-        Account,
+        AccountAge,
+        AccountPlaytime,
         VPN
     }
 

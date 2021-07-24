@@ -9,7 +9,10 @@ namespace VPNShield
         public bool IsEnabled { get; set; } = true;
 
         [Description("Should account age checking be enabled?")]
-        public bool AccountCheck { get; private set; } = false;
+        public bool AccountAgeCheck { get; private set; } = false;
+
+        [Description("Should account playtime checking be enabled?")]
+        public bool AccountPlaytimeCheck { get; private set; } = false;
 
         [Description("Should accounts that cannot be checked (eg. private Steam accounts) be kicked?")]
         public bool AccountKickPrivate { get; private set; } = true;
@@ -17,11 +20,17 @@ namespace VPNShield
         [Description("Steam API key for account age checking.")]
         public string SteamApiKey { get; private set; } = null;
 
-        [Description("Minimum Steam account age (if account checking is enabled - in days).")]
+        [Description("Minimum Steam account age (if account age checking is enabled - in days).")]
         public int SteamMinAge { get; private set; } = 14;
 
-        [Description("Message shown to players who are kicked by an account check.")]
-        public string AccountCheckKickMessage { get; private set; } = "Your account must be at least 14 day(s) old to play on this server or your account age could not be checked due to privacy settings.";
+        [Description("Minimum required SCPSL playtime required (if account playtime checking is enabled - in minutes).")]
+        public int SteamMinPlaytime { get; private set; } = 0;
+
+        [Description("Message shown to players who are kicked by an account age check. You may use %MINIMUMAGE% to insert the minimum age in days set into your kick message.")]
+        public string AccountAgeCheckKickMessage { get; private set; } = "Your account must be at least %MINIMUMAGE% day(s) old to play on this server or your account age could not be checked due to privacy settings.";
+
+        [Description("Message shown to players who are kicked by an account playtime check. You may use %MINIMUMPLAYTIME% to insert the minimum playtime in minutes set into your kick message.")]
+        public string AccountPlaytimeCheckKickMessage { get; private set; } = "Your account must have played SCP: SL for atleast %MINIMUMPLAYTIME% minute(s) to play on this server or your account SCP: SL playtime could not be checked due to privacy settings.";
 
         [Description("Should VPN checking be enabled?")]
         public bool VpnCheck { get; private set; } = true;

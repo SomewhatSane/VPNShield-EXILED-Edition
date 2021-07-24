@@ -17,18 +17,19 @@ namespace VPNShield
         public override string Name { get; } = "VPNShield EXILED Edition";
         public override string Author { get; } = "SomewhatSane";
         public override string Prefix { get; } = "vs";
-        public override Version RequiredExiledVersion { get; } = new Version("2.8.0");
+        public override Version RequiredExiledVersion { get; } = new Version("2.11.1");
 
-        public static readonly string exiledPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EXILED/Plugins");
+        public static readonly string exiledPath = Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EXILED"), "Plugins");
 
-        public static readonly HashSet<IPAddress> vpnWhitelistedIPs = new HashSet<IPAddress>();
-        public static readonly HashSet<IPAddress> vpnBlacklistedIPs = new HashSet<IPAddress>();
-        public static readonly HashSet<string> accountWhitelistedUserIDs = new HashSet<string>();
-        public static readonly HashSet<string> checksWhitelistedUserIDs = new HashSet<string>();
+        public static readonly HashSet<IPAddress> vpnWhitelistedIPs = new();
+        public static readonly HashSet<IPAddress> vpnBlacklistedIPs = new();
+        public static readonly HashSet<string> accountAgeWhitelistedUserIDs = new();
+        public static readonly HashSet<string> accountPlaytimeWhitelistedUserIDs = new();
+        public static readonly HashSet<string> checksWhitelistedUserIDs = new();
 
 
-        internal const string version = "2.1.0";
-        internal const string lastModifed = "2021/04/13 19:56 UTC";
+        internal const string version = "2.2.0";
+        internal const string lastModifed = "2021/07/24 12:24 UTC";
 
 
         public override void OnEnabled()

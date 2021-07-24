@@ -15,11 +15,11 @@ namespace VPNShield
     {
         private readonly Plugin plugin;
         public Account(Plugin plugin) => this.plugin = plugin;
-        private readonly HttpClient client = new HttpClient();
+        private readonly HttpClient client = new();
 
-        public async Task<bool> CheckAccount(IPAddress ipAddress, string userID) //A result of TRUE will kick.
+        public async Task<bool> CheckAccountAge(IPAddress ipAddress, string userID) //A result of TRUE will kick.
         {
-            if (CheckWhitelist(ipAddress, userID))
+            if (CheckAgeWhitelist(ipAddress, userID))
                 return false; //Check for known accounts.
 
             if (!userID.Contains("@", StringComparison.InvariantCulture))
@@ -34,12 +34,12 @@ namespace VPNShield
                     {
                         string errorResponse = await webRequest.Content.ReadAsStringAsync();
                         Log.Error(webRequest.StatusCode == (HttpStatusCode)429
-                            ? "Steam account check could not complete. You have reached your API key's limit."
+                            ? "Steam account age check could not complete. You have reached your API key's limit."
                             : $"Steam API connection error: {webRequest.StatusCode} - {errorResponse}");
                         return false;
                     }
                     string apiResponse = await webRequest.Content.ReadAsStringAsync();
-                    SteamApiResponse steamApiResponse = JsonSerializer.Deserialize<SteamApiResponse>(apiResponse);
+                    SteamAgeApiResponse steamApiResponse = JsonSerializer.Deserialize<SteamAgeApiResponse>(apiResponse);
 
                     int communityvisibilitystate = steamApiResponse.response.players[0].communityvisibilitystate;
 
@@ -64,7 +64,7 @@ namespace VPNShield
                     if (plugin.Config.VerboseMode)
                         Log.Debug($"UserID {userID} ({ipAddress}) is old enough to be on this server (account is {accountAge} day(s) old).");
 
-                    WhitelistAdd(userID);
+                    WhitelistAgeAdd(userID);
                     return false;
                 case "discord":
                 case "northwood":
@@ -75,20 +75,90 @@ namespace VPNShield
             }
         }
 
-        private bool CheckWhitelist(IPAddress ipAddress, string userID)
+        public async Task<bool> CheckAccountPlaytime(IPAddress ipAddress, string userID) //A result of TRUE will kick.
         {
-            if (!Plugin.accountWhitelistedUserIDs.Contains(userID))
+            if (CheckPlaytimeWhitelist(ipAddress, userID))
+                return false; //Check for known accounts.
+
+            if (!userID.Contains("@", StringComparison.InvariantCulture))
+                return false; //Invalid UserID
+
+            string[] userIdSplit = userID.Split('@');
+            switch (userIdSplit[1].ToLower(CultureInfo.InvariantCulture))
+            {
+                case "steam":
+                    HttpResponseMessage webRequest = await client.GetAsync($"http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key={plugin.Config.SteamApiKey}&format=json&steamid={userIdSplit[0]}&appids_filter[0]=700330");
+                    if (!webRequest.IsSuccessStatusCode)
+                    {
+                        string errorResponse = await webRequest.Content.ReadAsStringAsync();
+                        Log.Error(webRequest.StatusCode == (HttpStatusCode)429
+                            ? "Steam account playtime check could not complete. You have reached your API key's limit."
+                            : $"Steam API connection error: {webRequest.StatusCode} - {errorResponse}");
+                        return false;
+                    }
+                    string apiResponse = await webRequest.Content.ReadAsStringAsync();
+                    SteamPlaytimeApiResponse steamPlaytimeApiResponse = JsonSerializer.Deserialize<SteamPlaytimeApiResponse>(apiResponse);
+
+                    if (plugin.Config.AccountKickPrivate && steamPlaytimeApiResponse.response.games == null)
+                    {
+                        if (plugin.Config.VerboseMode)
+                            Log.Debug($"UserID {userID} ({ipAddress}) cannot have their SCP: SL playtime checked due to their privacy settings. Kicking..");
+                        return true;
+                    }
+
+                    int totalPlaytime = steamPlaytimeApiResponse.response.games[0].playtime_forever;
+
+                    if (totalPlaytime < plugin.Config.SteamMinPlaytime)
+                    {
+                        if (plugin.Config.VerboseMode)
+                            Log.Debug($"UserID {userID} ({ipAddress}) has not exceeded the minimum SCP: SL playtime required to play on this server (account has played SCP: SL for {totalPlaytime} minute(s)). Kicking..");
+                        return true;
+                    }
+
+                    if (plugin.Config.VerboseMode)
+                        Log.Debug($"UserID {userID} ({ipAddress}) has exceeded the minimum SCP: SL playtime required to be on this server (account has played SCP: SL for {totalPlaytime} minute(s)).");
+
+                    WhitelistPlaytimeAdd(userID);
+                    return false;
+                case "discord":
+                case "northwood":
+                    return false; //Ignore them
+
+                default:
+                    return false; //Any other UserID
+            }
+        }
+
+        private bool CheckAgeWhitelist(IPAddress ipAddress, string userID)
+        {
+            if (!Plugin.accountAgeWhitelistedUserIDs.Contains(userID))
                 return false;
             if (plugin.Config.VerboseMode)
                 Log.Debug($"UserID {userID} ({ipAddress}) is already known to be old enough. Skipping account age check.");
             return true;
         }
 
-        private void WhitelistAdd(string userID)
+        private bool CheckPlaytimeWhitelist(IPAddress ipAddress, string userID)
         {
-            Plugin.accountWhitelistedUserIDs.Add(userID);
-            using (StreamWriter whitelist = File.AppendText($"{Plugin.exiledPath}/VPNShield/VPNShield-WhitelistAccountAgeCheck.txt"))
-                whitelist.WriteLine(userID);
+            if (!Plugin.accountPlaytimeWhitelistedUserIDs.Contains(userID))
+                return false;
+            if (plugin.Config.VerboseMode)
+                Log.Debug($"UserID {userID} ({ipAddress}) is already known to have passed the minimum SCP: SL playtime requirement of this server. Skipping account playtime check.");
+            return true;
+        }
+
+        private void WhitelistAgeAdd(string userID)
+        {
+            Plugin.accountAgeWhitelistedUserIDs.Add(userID);
+            using StreamWriter whitelist = File.AppendText($"{Plugin.exiledPath}/VPNShield/VPNShield-WhitelistAccountAgeCheck.txt");
+            whitelist.WriteLine(userID);
+        }
+
+        private void WhitelistPlaytimeAdd(string userID)
+        {
+            Plugin.accountPlaytimeWhitelistedUserIDs.Add(userID);
+            using StreamWriter whitelist = File.AppendText($"{Plugin.exiledPath}/VPNShield/VPNShield-WhitelistAccountPlaytimeCheck.txt");
+            whitelist.WriteLine(userID);
         }
     }
 }

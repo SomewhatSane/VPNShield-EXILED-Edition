@@ -16,11 +16,11 @@ namespace VPNShield
 
         private const byte BypassFlags = (1 << 1) | (1 << 3); //IgnoreBans or IgnoreGeoblock
 
-        internal static readonly Stopwatch stopwatch = new Stopwatch();
-        private static readonly Stopwatch cleanupStopwatch = new Stopwatch();
-        private static readonly HashSet<PlayerToKick> ToKick = new HashSet<PlayerToKick>();
-        private static readonly HashSet<PlayerToKick> ToClear = new HashSet<PlayerToKick>();
-        private static readonly NetDataWriter writer = new NetDataWriter();
+        internal static readonly Stopwatch stopwatch = new();
+        private static readonly Stopwatch cleanupStopwatch = new();
+        private static readonly HashSet<PlayerToKick> ToKick = new();
+        private static readonly HashSet<PlayerToKick> ToClear = new();
+        private static readonly NetDataWriter writer = new();
 
         public void PreAuthenticating(PreAuthenticatingEventArgs ev)
         {
@@ -64,13 +64,24 @@ namespace VPNShield
 
         public void Verified(VerifiedEventArgs ev)
         {
-            if (!ToKick.TryGetValue(new PlayerToKick(ev.Player.UserId, KickReason.Account),
-                out PlayerToKick tk))
+            PlayerToKick tk;
+            if (!ToKick.TryGetValue(new PlayerToKick(ev.Player.UserId, KickReason.AccountAge), out tk) && !ToKick.TryGetValue(new PlayerToKick(ev.Player.UserId, KickReason.AccountPlaytime), out tk))
                 return;
 
             ToKick.Remove(tk);
-            ServerConsole.Disconnect(ev.Player.Connection,
-                tk.reason == KickReason.VPN ? plugin.Config.VpnKickMessage : plugin.Config.AccountCheckKickMessage);
+
+            switch (tk.reason)
+            {
+                case KickReason.AccountAge:
+                    ServerConsole.Disconnect(ev.Player.Connection, plugin.Config.AccountAgeCheckKickMessage.Replace("%MINIMUMAGE%", plugin.Config.SteamMinAge.ToString()));
+                    break;
+                case KickReason.AccountPlaytime:
+                    ServerConsole.Disconnect(ev.Player.Connection, plugin.Config.AccountPlaytimeCheckKickMessage.Replace("%MINIMUMPLAYTIME%", plugin.Config.SteamMinPlaytime.ToString()));
+                    break;
+                case KickReason.VPN:
+                    ServerConsole.Disconnect(ev.Player.Connection, plugin.Config.VpnKickMessage);
+                    break;
+            }
         }
 
         public void WaitingForPlayers()
@@ -79,7 +90,7 @@ namespace VPNShield
             Filesystem.LoadData();
         }
 
-        public void RoundEnded(RoundEndedEventArgs ev)
+        public void RoundEnded(RoundEndedEventArgs _)
         {
             ToKick.Clear();
             stopwatch.Reset();
@@ -90,30 +101,49 @@ namespace VPNShield
 
         public async Task Check(PreAuthenticatingEventArgs ev)
         {
-            //Account check.
-            if (plugin.Config.AccountCheck)
+            //Account age check.
+            if (plugin.Config.AccountAgeCheck)
             {
                 if (!string.IsNullOrWhiteSpace(plugin.Config.SteamApiKey))
                 {
-                    if (await plugin.Account.CheckAccount(ev.Request.RemoteEndPoint.Address, ev.UserId))
+                    if (await plugin.Account.CheckAccountAge(ev.Request.RemoteEndPoint.Address, ev.UserId))
                     {
                         Player player = Player.Get(ev.UserId);
                         if (player != null)
-                            ServerConsole.Disconnect(player.Connection,
-                                plugin.Config.AccountCheckKickMessage);
+                            ServerConsole.Disconnect(player.Connection, plugin.Config.AccountAgeCheckKickMessage.Replace("%MINIMUMAGE", plugin.Config.SteamMinAge.ToString()));
+                            
                         else
                             StartStopwatch();
-                        ToKick.Add(new PlayerToKick(ev.UserId, KickReason.Account));
+                        ToKick.Add(new PlayerToKick(ev.UserId, KickReason.AccountAge));
                         return;
                     }
                 }
 
                 else
-                {
                     Log.Warn($"An account age check cannot be performed for {ev.UserId} ({ev.Request.RemoteEndPoint.Address}). Steam API key is null.");
-                }
 
             }
+
+            //Account playtime check.
+            if (plugin.Config.AccountPlaytimeCheck)
+            {
+                if (!string.IsNullOrWhiteSpace(plugin.Config.SteamApiKey))
+                {
+                    if (await plugin.Account.CheckAccountPlaytime(ev.Request.RemoteEndPoint.Address, ev.UserId))
+                    {
+                        Player player = Player.Get(ev.UserId);
+                        if (player != null)
+                            ServerConsole.Disconnect(player.Connection, plugin.Config.AccountPlaytimeCheckKickMessage.Replace("%MINIMUMPLAYTIME%", plugin.Config.SteamMinPlaytime.ToString()));
+                        else
+                            StartStopwatch();
+                        ToKick.Add(new PlayerToKick(ev.UserId, KickReason.AccountPlaytime));
+                    }
+                }
+
+                else
+                    Log.Warn($"An account playtime check cannot be performed for {ev.UserId} ({ev.Request.RemoteEndPoint.Address}). Steam API key is null.");
+            }
+
 
             //VPN Check.
             if (plugin.Config.VpnCheck)
@@ -124,10 +154,7 @@ namespace VPNShield
                     {
                         Player player = Player.Get(ev.UserId);
                         if (player != null)
-                        {
-                            ServerConsole.Disconnect(player.Connection,
-                                plugin.Config.VpnKickMessage);
-                        }
+                            ServerConsole.Disconnect(player.Connection, plugin.Config.VpnKickMessage);
                         else
                             StartStopwatch();
                         ToKick.Add(new PlayerToKick(ev.UserId, KickReason.VPN));
@@ -135,9 +162,7 @@ namespace VPNShield
                 }
 
                 else
-                {
                     Log.Warn($"A VPN check cannot be performed for {ev.Request.RemoteEndPoint.Address} ({ev.UserId}). IPHub API key is null.");
-                }
 
             }
 

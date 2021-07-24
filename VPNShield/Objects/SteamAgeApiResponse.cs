@@ -2,17 +2,17 @@
 
 namespace VPNShield.Objects
 {
-    public class SteamApiResponse
+    public class SteamAgeApiResponse
     {
-        public SteamResponse response { get; set; }
+        public SteamAgeResponse response { get; set; }
     }
 
-    public class SteamResponse
+    public class SteamAgeResponse
     {
-        public List<SteamPlayer> players { get; set; }
+        public List<SteamAgePlayer> players { get; set; }
     }
 
-    public class SteamPlayer
+    public class SteamAgePlayer
     {
         public string steamid { get; set; }
         public int communityvisibilitystate { get; set; }
