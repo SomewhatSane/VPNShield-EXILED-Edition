@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Reflection;
 using PlayerEvents = Exiled.Events.Handlers.Player;
 using ServerEvents = Exiled.Events.Handlers.Server;
 
@@ -27,10 +28,9 @@ namespace VPNShield
         public static readonly HashSet<string> accountPlaytimeWhitelistedUserIDs = new();
         public static readonly HashSet<string> checksWhitelistedUserIDs = new();
 
-
-        internal const string version = "2.3.0";
+        public static readonly string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
         internal const string branch = "Stable";
-        internal const string lastModifed = "2021/08/21 19:15 UTC";
+        internal const string lastModifed = "2021/08/21 19:52 UTC";
 
 
         public override void OnEnabled()
