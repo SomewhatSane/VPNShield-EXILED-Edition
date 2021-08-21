@@ -64,23 +64,34 @@ namespace VPNShield
 
         public void Verified(VerifiedEventArgs ev)
         {
-            PlayerToKick tk;
-            if (!ToKick.TryGetValue(new PlayerToKick(ev.Player.UserId, KickReason.AccountAge), out tk) && !ToKick.TryGetValue(new PlayerToKick(ev.Player.UserId, KickReason.AccountPlaytime), out tk))
-                return;
-
-            ToKick.Remove(tk);
-
-            switch (tk.reason)
+            //I'd love to make this more efficient but I'm not sure how to considering we have PlayerToKick objects and not nice dictionaries or anything.
+            foreach (PlayerToKick tk in ToKick)
             {
-                case KickReason.AccountAge:
-                    ServerConsole.Disconnect(ev.Player.Connection, plugin.Config.AccountAgeCheckKickMessage.Replace("%MINIMUMAGE%", plugin.Config.SteamMinAge.ToString()));
-                    break;
-                case KickReason.AccountPlaytime:
-                    ServerConsole.Disconnect(ev.Player.Connection, plugin.Config.AccountPlaytimeCheckKickMessage.Replace("%MINIMUMPLAYTIME%", plugin.Config.SteamMinPlaytime.ToString()));
-                    break;
-                case KickReason.VPN:
-                    ServerConsole.Disconnect(ev.Player.Connection, plugin.Config.VpnKickMessage);
-                    break;
+                if (tk.userId == ev.Player.UserId)
+                {
+                    ToKick.Remove(tk);
+                    switch (tk.reason)
+                    {
+                        case KickReason.None:
+                            break;
+                        case KickReason.AccountAge:
+                            ServerConsole.Disconnect(ev.Player.Connection, plugin.Config.AccountAgeCheckKickMessage.Replace("%MINIMUMAGE%", plugin.Config.SteamMinAge.ToString()));
+                            break;
+                        case KickReason.AccountPlaytime:
+                            ServerConsole.Disconnect(ev.Player.Connection, plugin.Config.AccountPlaytimeCheckKickMessage.Replace("%MINIMUMPLAYTIME%", plugin.Config.SteamMinPlaytime.ToString()));
+                            break;
+                        case KickReason.AccountPrivate:
+                            ServerConsole.Disconnect(ev.Player.Connection, plugin.Config.AccountPrivateKickMessage);
+                            break;
+                        case KickReason.AccountSteamError:
+                            ServerConsole.Disconnect(ev.Player.Connection, plugin.Config.AccountSteamErrorKickMessage);
+                            break;
+                        case KickReason.VPN:
+                            ServerConsole.Disconnect(ev.Player.Connection, plugin.Config.VpnKickMessage);
+                            break;
+                    }
+                    return;
+                }
             }
         }
 
@@ -95,6 +106,7 @@ namespace VPNShield
             ToKick.Clear();
             stopwatch.Reset();
             cleanupStopwatch.Reset();
+
             if (plugin.Config.VerboseMode)
                 Log.Debug("Cleared ToKick HashSet.");
         }
@@ -106,16 +118,33 @@ namespace VPNShield
             {
                 if (!string.IsNullOrWhiteSpace(plugin.Config.SteamApiKey))
                 {
-                    if (await plugin.Account.CheckAccountAge(ev.Request.RemoteEndPoint.Address, ev.UserId))
+                    //This should work but I'll have to make sure I test this in the morning.
+                    string kickMessage = null;
+                    KickReason kickReason = KickReason.None;
+                    switch (await plugin.Account.CheckAccountAge(ev.Request.RemoteEndPoint.Address, ev.UserId))
+                    {
+                        case Account.AccountCheckResult.Fail:
+                            kickMessage = plugin.Config.AccountAgeCheckKickMessage.Replace("%MINIMUMAGE", plugin.Config.SteamMinAge.ToString());
+                            kickReason = KickReason.AccountAge;
+                            break;
+                        case Account.AccountCheckResult.Private:
+                            kickMessage = plugin.Config.AccountPrivateKickMessage;
+                            kickReason = KickReason.AccountPrivate;
+                            break;
+                        case Account.AccountCheckResult.APIError:
+                            kickMessage = plugin.Config.AccountSteamErrorKickMessage;
+                            kickReason = KickReason.AccountSteamError;
+                            break;
+                    }
+
+                    if (kickReason != KickReason.None)
                     {
                         Player player = Player.Get(ev.UserId);
                         if (player != null)
-                            ServerConsole.Disconnect(player.Connection, plugin.Config.AccountAgeCheckKickMessage.Replace("%MINIMUMAGE", plugin.Config.SteamMinAge.ToString()));
-                            
+                            ServerConsole.Disconnect(player.Connection, kickMessage);
                         else
                             StartStopwatch();
-                        ToKick.Add(new PlayerToKick(ev.UserId, KickReason.AccountAge));
-                        return;
+                        ToKick.Add(new PlayerToKick(ev.UserId, kickReason));
                     }
                 }
 
@@ -129,14 +158,34 @@ namespace VPNShield
             {
                 if (!string.IsNullOrWhiteSpace(plugin.Config.SteamApiKey))
                 {
-                    if (await plugin.Account.CheckAccountPlaytime(ev.Request.RemoteEndPoint.Address, ev.UserId))
+                    string kickMessage = null;
+                    KickReason kickReason = KickReason.None;
+
+                    switch (await plugin.Account.CheckAccountPlaytime(ev.Request.RemoteEndPoint.Address, ev.UserId))
+                    {
+                        //Same here, test this!
+                        case Account.AccountCheckResult.Fail:
+                            kickMessage = plugin.Config.AccountPlaytimeCheckKickMessage.Replace("%MINIMUMPLAYTIME%", plugin.Config.SteamMinPlaytime.ToString());
+                            kickReason = KickReason.AccountPlaytime;
+                            break;
+                        case Account.AccountCheckResult.Private:
+                            kickMessage = plugin.Config.AccountPrivateKickMessage;
+                            kickReason = KickReason.AccountPrivate;
+                            break;
+                        case Account.AccountCheckResult.APIError:
+                            kickMessage = plugin.Config.AccountSteamErrorKickMessage;
+                            kickReason = KickReason.AccountSteamError;
+                            break;
+                    }
+
+                    if (kickReason != KickReason.None)
                     {
                         Player player = Player.Get(ev.UserId);
                         if (player != null)
-                            ServerConsole.Disconnect(player.Connection, plugin.Config.AccountPlaytimeCheckKickMessage.Replace("%MINIMUMPLAYTIME%", plugin.Config.SteamMinPlaytime.ToString()));
+                            ServerConsole.Disconnect(player.Connection, kickMessage);
                         else
                             StartStopwatch();
-                        ToKick.Add(new PlayerToKick(ev.UserId, KickReason.AccountPlaytime));
+                        ToKick.Add(new PlayerToKick(ev.UserId, kickReason));
                     }
                 }
 

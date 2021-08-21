@@ -4,14 +4,17 @@ namespace VPNShield
 {
     internal enum KickReason : byte
     {
+        None,
         AccountAge,
         AccountPlaytime,
+        AccountPrivate,
+        AccountSteamError,
         VPN
     }
 
     internal readonly struct PlayerToKick : IEquatable<PlayerToKick>
     {
-        private readonly string userId;
+        internal readonly string userId;
         internal readonly KickReason reason;
         internal readonly uint creationTime;
 

@@ -17,7 +17,7 @@ namespace VPNShield
         public override string Name { get; } = "VPNShield EXILED Edition";
         public override string Author { get; } = "SomewhatSane";
         public override string Prefix { get; } = "vs";
-        public override Version RequiredExiledVersion { get; } = new Version("2.11.1");
+        public override Version RequiredExiledVersion { get; } = new Version("2.14.0");
 
         public static readonly string exiledPath = Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EXILED"), "Plugins");
 
@@ -28,13 +28,14 @@ namespace VPNShield
         public static readonly HashSet<string> checksWhitelistedUserIDs = new();
 
 
-        internal const string version = "2.2.0";
-        internal const string lastModifed = "2021/07/24 12:24 UTC";
+        internal const string version = "2.3.0";
+        internal const string branch = "Stable";
+        internal const string lastModifed = "2021/08/21 19:15 UTC";
 
 
         public override void OnEnabled()
         { 
-            Log.Info($"{Name} v{version} by {Author}. Last modified: {lastModifed}.");
+            Log.Info($"{Name} {branch} v{version} by {Author}. Last modified: {lastModifed}.");
 
             Log.Info("Loading base scripts.");
             Account = new Account(this);

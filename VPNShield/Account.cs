@@ -17,13 +17,13 @@ namespace VPNShield
         public Account(Plugin plugin) => this.plugin = plugin;
         private readonly HttpClient client = new();
 
-        public async Task<bool> CheckAccountAge(IPAddress ipAddress, string userID) //A result of TRUE will kick.
+        public async Task<AccountCheckResult> CheckAccountAge(IPAddress ipAddress, string userID) //A result of TRUE will kick.
         {
             if (CheckAgeWhitelist(ipAddress, userID))
-                return false; //Check for known accounts.
+                return AccountCheckResult.Pass; //Check for known accounts.
 
             if (!userID.Contains("@", StringComparison.InvariantCulture))
-                return false; //Invalid UserID
+                return AccountCheckResult.Pass; //Invalid UserID
 
             string[] userIdSplit = userID.Split('@');
             switch (userIdSplit[1].ToLower(CultureInfo.InvariantCulture))
@@ -36,7 +36,7 @@ namespace VPNShield
                         Log.Error(webRequest.StatusCode == (HttpStatusCode)429
                             ? "Steam account age check could not complete. You have reached your API key's limit."
                             : $"Steam API connection error: {webRequest.StatusCode} - {errorResponse}");
-                        return false;
+                        return AccountCheckResult.APIError;
                     }
                     string apiResponse = await webRequest.Content.ReadAsStringAsync();
                     SteamAgeApiResponse steamApiResponse = JsonSerializer.Deserialize<SteamAgeApiResponse>(apiResponse);
@@ -47,7 +47,7 @@ namespace VPNShield
                     {
                         if (plugin.Config.VerboseMode)
                             Log.Debug($"UserID {userID} ({ipAddress}) cannot have their account age checked due to their privacy settings. Kicking..");
-                        return true;
+                        return AccountCheckResult.Private;
                     }
 
                     int timecreated = steamApiResponse.response.players[0].timecreated;
@@ -58,30 +58,30 @@ namespace VPNShield
                     {
                         if (plugin.Config.VerboseMode)
                             Log.Debug($"UserID {userID} ({ipAddress}) is too young to be on this server (account is {accountAge} day(s) old). Kicking..");
-                        return true;
+                        return AccountCheckResult.Fail;
                     }
 
                     if (plugin.Config.VerboseMode)
                         Log.Debug($"UserID {userID} ({ipAddress}) is old enough to be on this server (account is {accountAge} day(s) old).");
 
                     WhitelistAgeAdd(userID);
-                    return false;
+                    return AccountCheckResult.Pass;
                 case "discord":
                 case "northwood":
-                    return false; //Ignore them
+                    return AccountCheckResult.Pass; //Ignore them
 
                 default:
-                    return false; //Any other UserID
+                    return AccountCheckResult.Pass; //Any other UserID
             }
         }
 
-        public async Task<bool> CheckAccountPlaytime(IPAddress ipAddress, string userID) //A result of TRUE will kick.
+        public async Task<AccountCheckResult> CheckAccountPlaytime(IPAddress ipAddress, string userID) //A result of TRUE will kick.
         {
             if (CheckPlaytimeWhitelist(ipAddress, userID))
-                return false; //Check for known accounts.
+                return AccountCheckResult.Pass; //Check for known accounts.
 
             if (!userID.Contains("@", StringComparison.InvariantCulture))
-                return false; //Invalid UserID
+                return AccountCheckResult.Pass; //Invalid UserID
 
             string[] userIdSplit = userID.Split('@');
             switch (userIdSplit[1].ToLower(CultureInfo.InvariantCulture))
@@ -94,7 +94,7 @@ namespace VPNShield
                         Log.Error(webRequest.StatusCode == (HttpStatusCode)429
                             ? "Steam account playtime check could not complete. You have reached your API key's limit."
                             : $"Steam API connection error: {webRequest.StatusCode} - {errorResponse}");
-                        return false;
+                        return AccountCheckResult.APIError;
                     }
                     string apiResponse = await webRequest.Content.ReadAsStringAsync();
                     SteamPlaytimeApiResponse steamPlaytimeApiResponse = JsonSerializer.Deserialize<SteamPlaytimeApiResponse>(apiResponse);
@@ -103,7 +103,7 @@ namespace VPNShield
                     {
                         if (plugin.Config.VerboseMode)
                             Log.Debug($"UserID {userID} ({ipAddress}) cannot have their SCP: SL playtime checked due to their privacy settings. Kicking..");
-                        return true;
+                        return AccountCheckResult.Private;
                     }
 
                     int totalPlaytime = steamPlaytimeApiResponse.response.games[0].playtime_forever;
@@ -112,20 +112,20 @@ namespace VPNShield
                     {
                         if (plugin.Config.VerboseMode)
                             Log.Debug($"UserID {userID} ({ipAddress}) has not exceeded the minimum SCP: SL playtime required to play on this server (account has played SCP: SL for {totalPlaytime} minute(s)). Kicking..");
-                        return true;
+                        return AccountCheckResult.Fail;
                     }
 
                     if (plugin.Config.VerboseMode)
                         Log.Debug($"UserID {userID} ({ipAddress}) has exceeded the minimum SCP: SL playtime required to be on this server (account has played SCP: SL for {totalPlaytime} minute(s)).");
 
                     WhitelistPlaytimeAdd(userID);
-                    return false;
+                    return AccountCheckResult.Pass;
                 case "discord":
                 case "northwood":
-                    return false; //Ignore them
+                    return AccountCheckResult.Pass; //Ignore them
 
                 default:
-                    return false; //Any other UserID
+                    return AccountCheckResult.Pass; //Any other UserID
             }
         }
 
@@ -159,6 +159,14 @@ namespace VPNShield
             Plugin.accountPlaytimeWhitelistedUserIDs.Add(userID);
             using StreamWriter whitelist = File.AppendText($"{Plugin.exiledPath}/VPNShield/VPNShield-WhitelistAccountPlaytimeCheck.txt");
             whitelist.WriteLine(userID);
+        }
+
+        public enum AccountCheckResult
+        {
+            Fail,
+            Pass,
+            Private,
+            APIError,
         }
     }
 }
