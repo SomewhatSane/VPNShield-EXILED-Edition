@@ -36,10 +36,10 @@ namespace VPNShield
         public string AccountPlaytimeCheckKickMessage { get; private set; } = "Your account must have played SCP: SL for atleast %MINIMUMPLAYTIME% minute(s) to play on this server.";
 
         [Description("Message shown to players who are kicked because they account cannot be checked due to privacy settings.")]
-        public string AccountPrivateKickMessage { get; private set; } = "An account check could not be performed as your profile is set to private. Please make your profile public and try connecting again!";
+        public string AccountPrivateKickMessage { get; private set; } = "An account check could not be performed as your Steam profile is set to private. Please make your profile public and try connecting again!";
 
         [Description("Message shown to players who are kicked as there was a Steam API error (only needed if account_kick_on_steam_error).")]
-        public string AccountSteamErrorKickMessage { get; private set; } = "An error occurred when trying to check your account. Due to the policy set on the server, you were kicked. Please contact the server administrator about this and try again later.";
+        public string AccountSteamErrorKickMessage { get; private set; } = "An error occurred when trying to check your Steam account. Due to the policy set on this server, you were kicked. Please contact the server administration about this and try joining again later.";
 
         [Description("Should VPN checking be enabled?")]
         public bool VpnCheck { get; private set; } = true;
