@@ -18,7 +18,7 @@ namespace VPNShield
         public override string Name { get; } = "VPNShield EXILED Edition";
         public override string Author { get; } = "SomewhatSane";
         public override string Prefix { get; } = "vs";
-        public override Version RequiredExiledVersion { get; } = new Version("2.14.0");
+        public override Version RequiredExiledVersion { get; } = new Version("3.0.0");
 
         public static readonly string exiledPath = Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EXILED"), "Plugins");
 
@@ -30,7 +30,7 @@ namespace VPNShield
 
         public static readonly string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
         internal const string branch = "Stable";
-        internal const string lastModifed = "2021/08/21 19:52 UTC";
+        internal const string lastModifed = "2021/08/30 18:08 UTC";
 
 
         public override void OnEnabled()
