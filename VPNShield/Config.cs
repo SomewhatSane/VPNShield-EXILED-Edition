@@ -33,10 +33,10 @@ namespace VPNShield
         public string AccountAgeCheckKickMessage { get; private set; } = "Your account must be at least %MINIMUMAGE% day(s) old to play on this server.";
 
         [Description("Message shown to players who are kicked by an account playtime check. You may use %MINIMUMPLAYTIME% to insert the minimum playtime in minutes set into your kick message.")]
-        public string AccountPlaytimeCheckKickMessage { get; private set; } = "Your account must have played SCP: SL for atleast %MINIMUMPLAYTIME% minute(s) to play on this server.";
+        public string AccountPlaytimeCheckKickMessage { get; private set; } = "Your account must have played SCP: SL for at least %MINIMUMPLAYTIME% minute(s) to play on this server.";
 
         [Description("Message shown to players who are kicked because they account cannot be checked due to privacy settings.")]
-        public string AccountPrivateKickMessage { get; private set; } = "An account check could not be performed as your Steam profile is set to private. Please make your profile public and try connecting again!";
+        public string AccountPrivateKickMessage { get; private set; } = "An account check could not be performed as your Steam profile is set to private. Please make your profile public and try connecting again.";
 
         [Description("Message shown to players who are kicked as there was a Steam API error (only needed if account_kick_on_steam_error).")]
         public string AccountSteamErrorKickMessage { get; private set; } = "An error occurred when trying to check your Steam account. Due to the policy set on this server, you were kicked. Please contact the server administration about this and try joining again later.";
@@ -52,6 +52,12 @@ namespace VPNShield
 
         [Description("Message shown to players who are kicked by a VPN check.")]
         public string VpnKickMessage { get; private set; } = "VPNs and proxies are forbidden on this server.";
+
+        [Description("Send a message to Discord via webhooks when someone is kicked by VPNShield?")]
+        public bool KickToDiscord { get; set; } = false;
+
+        [Description("Discord Webhook URL for kick_to_discord (only needed if kick_to_discord is true).")]
+        public string KickToDiscordWebhookUrl { get; set; }
 
         [Description("Check for VPNShield updates on startup?")]
         public bool CheckForUpdates { get; private set; } = true;

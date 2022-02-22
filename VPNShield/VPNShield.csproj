@@ -114,6 +114,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Objects\IpHubApiResponse.cs" />
     <Compile Include="Objects\SteamAgeApiResponse.cs" />
+    <Compile Include="WebhookHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

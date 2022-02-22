@@ -56,6 +56,7 @@ namespace VPNShield
                 writer.Put((byte)10);
                 writer.Put(plugin.Config.VpnKickMessage); //Limit of 400 characters due to the limit of the UDP packet.
                 ev.Request.Reject(writer);
+
                 return;
             }
 
@@ -90,6 +91,11 @@ namespace VPNShield
                             ServerConsole.Disconnect(ev.Player.Connection, plugin.Config.VpnKickMessage);
                             break;
                     }
+
+                    //Send message to webhook if enabled.
+                    if (plugin.Config.KickToDiscord)
+                        _ = plugin.WebhookHandler.SendWebhook(plugin.Config.KickToDiscordWebhookUrl, ev.Player, tk.reason);
+
                     return;
                 }
             }
@@ -141,7 +147,14 @@ namespace VPNShield
                     {
                         Player player = Player.Get(ev.UserId);
                         if (player != null)
+                        {
                             ServerConsole.Disconnect(player.Connection, kickMessage);
+
+                            //Send message to webhook if enabled.
+                            if (plugin.Config.KickToDiscord)
+                                _ = plugin.WebhookHandler.SendWebhook(plugin.Config.KickToDiscordWebhookUrl, player, kickReason);
+                        }
+
                         else
                             StartStopwatch();
                         ToKick.Add(new PlayerToKick(ev.UserId, kickReason));
@@ -182,7 +195,13 @@ namespace VPNShield
                     {
                         Player player = Player.Get(ev.UserId);
                         if (player != null)
+                        {
                             ServerConsole.Disconnect(player.Connection, kickMessage);
+
+                            //Send message to webhook if enabled.
+                            if (plugin.Config.KickToDiscord)
+                                _ = plugin.WebhookHandler.SendWebhook(plugin.Config.KickToDiscordWebhookUrl, player, kickReason);
+                        }
                         else
                             StartStopwatch();
                         ToKick.Add(new PlayerToKick(ev.UserId, kickReason));
@@ -203,7 +222,13 @@ namespace VPNShield
                     {
                         Player player = Player.Get(ev.UserId);
                         if (player != null)
+                        {
                             ServerConsole.Disconnect(player.Connection, plugin.Config.VpnKickMessage);
+
+                            //Send message to webhook if enabled.
+                            if (plugin.Config.KickToDiscord)
+                                _ = plugin.WebhookHandler.SendWebhook(plugin.Config.KickToDiscordWebhookUrl, player, KickReason.VPN);
+                        }
                         else
                             StartStopwatch();
                         ToKick.Add(new PlayerToKick(ev.UserId, KickReason.VPN));

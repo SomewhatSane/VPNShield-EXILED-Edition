@@ -2,7 +2,7 @@
 
 namespace VPNShield
 {
-    internal enum KickReason : byte
+    public enum KickReason : byte
     {
         None,
         AccountAge,
