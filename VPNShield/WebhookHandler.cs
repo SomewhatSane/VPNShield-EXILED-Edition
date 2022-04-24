@@ -23,6 +23,12 @@ namespace VPNShield
             }
 
             object webhookData;
+            object EmbedServer = new
+            {
+                name = "Server",
+                value = plugin.Config.ServerName,
+            };
+
 
             switch (kickReason)
             {
@@ -38,6 +44,7 @@ namespace VPNShield
                                 color = "3447003",
                                 fields = new List<object>
                                 {
+                                    EmbedServer,
                                     new
                                     {
                                         name = "Nickname",
@@ -76,6 +83,7 @@ namespace VPNShield
                                 color = "3066993",
                                 fields = new List<object>
                                 {
+                                    EmbedServer,
                                     new
                                     {
                                         name = "Nickname",
@@ -114,6 +122,7 @@ namespace VPNShield
                                 color = "10181046",
                                 fields = new List<object>
                                 {
+                                    EmbedServer,
                                     new
                                     {
                                         name = "Nickname",
@@ -152,6 +161,7 @@ namespace VPNShield
                                 color = "15105570",
                                 fields = new List<object>
                                 {
+                                    EmbedServer,
                                     new
                                     {
                                         name = "Nickname",
@@ -190,6 +200,7 @@ namespace VPNShield
                                 color = "15158332",
                                 fields = new List<object>
                                 {
+                                    EmbedServer,
                                     new
                                     {
                                         name = "Nickname",
@@ -229,6 +240,7 @@ namespace VPNShield
                                 color = "9936031",
                                 fields = new List<object>
                                 {
+                                    EmbedServer,
                                     new
                                     {
                                         name = "Nickname",

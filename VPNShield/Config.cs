@@ -59,6 +59,9 @@ namespace VPNShield
         [Description("Discord Webhook URL for kick_to_discord (only needed if kick_to_discord is true).")]
         public string KickToDiscordWebhookUrl { get; set; }
 
+        [Description("When posting to discord what goes on the embed for the server?")]
+        public string ServerName { get; set; } = "";
+
         [Description("Check for VPNShield updates on startup?")]
         public bool CheckForUpdates { get; private set; } = true;
 
