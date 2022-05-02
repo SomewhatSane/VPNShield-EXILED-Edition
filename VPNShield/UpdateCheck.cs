@@ -10,12 +10,11 @@ namespace VPNShield
     {
         public static async Task CheckForUpdate()
         {
-            Log.Info("Checking for update.");
+            Log.Info("Checking for update...");
 
             using HttpClient client = new();
-
-            client.DefaultRequestHeaders.Add("User-Agent", $"VPNShield Update Checker - Running VPNShield {Plugin.branch} - v{Plugin.version}");
-            HttpResponseMessage response = await client.GetAsync($"https://scpsl.somewhatsane.co.uk/plugins/vpnshield/checkForUpdate.php?Branch={Plugin.branch}&CurrentVersion={Plugin.version}");
+            client.DefaultRequestHeaders.Add("User-Agent", $"VPNShield Update Checker - Running VPNShield v{Plugin.version}");
+            HttpResponseMessage response = await client.GetAsync($"https://scpsl.somewhatsane.co.uk/plugins/vpnshield/checkForUpdate.php?CurrentVersion={Plugin.version}");
             string data = await response.Content.ReadAsStringAsync();
 
             try

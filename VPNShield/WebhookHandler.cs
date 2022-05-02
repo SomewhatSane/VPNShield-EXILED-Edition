@@ -1,11 +1,13 @@
-﻿using System;
+﻿using Exiled.API.Features;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Exiled.API.Features;
 using Utf8Json;
+using VPNShield.Objects;
+using VPNShield.Enums;
+using System.Text.RegularExpressions;
 
 namespace VPNShield
 {
@@ -14,7 +16,7 @@ namespace VPNShield
         private readonly Plugin plugin;
         private readonly HttpClient httpClient = new();
         public WebhookHandler(Plugin plugin) => this.plugin = plugin;
-        public async Task<bool> SendWebhook(string url, Player player, KickReason kickReason)
+        public async Task<bool> SendWebhook(string url, Player player, KickReason kickReason, VPNShieldIP checkResponse = null)
         {
             if (string.IsNullOrWhiteSpace(url))
             {
@@ -22,7 +24,7 @@ namespace VPNShield
                 return false;
             }
 
-            object webhookData;
+            object webhookData = null;
 
             switch (kickReason)
             {
@@ -38,6 +40,11 @@ namespace VPNShield
                                 color = "3447003",
                                 fields = new List<object>
                                 {
+                                    new
+                                    {
+                                        name = "Server",
+                                        value = StripRichText(Server.Name)
+                                    },
                                     new
                                     {
                                         name = "Nickname",
@@ -56,7 +63,7 @@ namespace VPNShield
                                     new
                                     {
                                         name = "Kick reason",
-                                        value = "Player has not met / exceeded the minimum Steam account age set on this server."
+                                        value = $"Player has not met / exceeded the minimum Steam account age set on this server ({plugin.Config.SteamMinAge})."
                                     }
                                 },
                                 timestamp = DateTime.UtcNow.ToString("o")
@@ -78,6 +85,11 @@ namespace VPNShield
                                 {
                                     new
                                     {
+                                        name = "Server",
+                                        value = StripRichText(Server.Name)
+                                    },
+                                    new
+                                    {
                                         name = "Nickname",
                                         value = player.Nickname
                                     },
@@ -94,7 +106,7 @@ namespace VPNShield
                                     new
                                     {
                                         name = "Kick reason",
-                                        value = "Player has not met the minimum required playtime set on this server."
+                                        value = $"Player has not met the minimum required playtime set on this server ({plugin.Config.SteamMinPlaytime})."
                                     }
                                 },
                                 timestamp = DateTime.UtcNow.ToString("o")
@@ -114,6 +126,11 @@ namespace VPNShield
                                 color = "10181046",
                                 fields = new List<object>
                                 {
+                                    new
+                                    {
+                                        name = "Server",
+                                        value = StripRichText(Server.Name)
+                                    },
                                     new
                                     {
                                         name = "Nickname",
@@ -140,6 +157,7 @@ namespace VPNShield
                         }
                     };
                     break;
+
                 case KickReason.AccountSteamError:
                     webhookData = new
                     {
@@ -152,6 +170,11 @@ namespace VPNShield
                                 color = "15105570",
                                 fields = new List<object>
                                 {
+                                    new
+                                    {
+                                        name = "Server",
+                                        value = StripRichText(Server.Name)
+                                    },
                                     new
                                     {
                                         name = "Nickname",
@@ -178,11 +201,16 @@ namespace VPNShield
                         }
                     };
                     break;
+
                 case KickReason.VPN:
-                    webhookData = new
+
+                    switch (plugin.Config.VpnCheckService)
                     {
-                        content = "",
-                        embeds = new List<object>
+                        case 0:
+                            webhookData = new
+                            {
+                                content = "",
+                                embeds = new List<object>
                         {
                             new
                             {
@@ -190,6 +218,11 @@ namespace VPNShield
                                 color = "15158332",
                                 fields = new List<object>
                                 {
+                                    new
+                                    {
+                                        name = "Server",
+                                        value = StripRichText(Server.Name)
+                                    },
                                     new
                                     {
                                         name = "Nickname",
@@ -214,10 +247,71 @@ namespace VPNShield
                                 timestamp = DateTime.UtcNow.ToString("o")
                             }
                         }
-                    };
+                            };
+                            break;
+                        case 1:
+                            webhookData = new
+                            {
+                                content = "",
+                                embeds = new List<object>
+                        {
+                            new
+                            {
+                                title = "[VPNShield] Player Kicked!",
+                                color = "15158332",
+                                fields = new List<object>
+                                {
+                                    new
+                                    {
+                                        name = "Server",
+                                        value = StripRichText(Server.Name)
+                                    },
+                                    new
+                                    {
+                                        name = "Nickname",
+                                        value = player.Nickname
+                                    },
+                                    new
+                                    {
+                                        name = "User ID",
+                                        value = player.UserId
+                                    },
+                                    new
+                                    {
+                                        name = "IP Address",
+                                        value = player.IPAddress
+                                    },
+                                    new
+                                    {
+                                        name = "GII Score",
+                                        value = checkResponse.GiiScore
+                                    },
+                                    new
+                                    {
+                                        name = "Mobile ISP? (-1 if unknown)",
+                                        value = checkResponse.GiiMobile
+                                    },
+                                    new
+                                    {
+                                        name = "GII checked at",
+                                        value = new DateTime(checkResponse.CheckedAt)
+                                    },
+                                    new
+                                    {
+                                        name = "Kick reason",
+                                        value = "Failed VPN check."
+                                    }
+                                },
+                                timestamp = DateTime.UtcNow.ToString("o")
+                            }
+                        }
+                            };
+                            break;
+                    }
+                    
                     break;
+
                 case KickReason.None:
-                default:
                     webhookData = new
                     {
                         content = "",
@@ -229,6 +323,11 @@ namespace VPNShield
                                 color = "9936031",
                                 fields = new List<object>
                                 {
+                                    new
+                                    {
+                                        name = "Server",
+                                        value = StripRichText(Server.Name)
+                                    },
                                     new
                                     {
                                         name = "Nickname",
@@ -255,6 +354,7 @@ namespace VPNShield
                         }
                     };
                     break;
+
             }
 
             StringContent webhookStringContent = new(Encoding.UTF8.GetString(JsonSerializer.Serialize(webhookData)), Encoding.UTF8, "application/json");
@@ -263,14 +363,19 @@ namespace VPNShield
 
             if (!responseMessage.IsSuccessStatusCode)
             {
-                Log.Error($"[{(int)responseMessage.StatusCode} - {responseMessage.StatusCode}] A non-successful status code was returned by Discord when trying to post to webhook. Response Message: {responseMessageString} .");
+                Log.Error($"[{(int)responseMessage.StatusCode} - {responseMessage.StatusCode}] A non-successful status code was returned by Discord when trying to post to webhook regarding {player.UserId}'s ({player.IPAddress}) kick. Response Message: {responseMessageString}.");
                 return false;
             }
 
             if (plugin.Config.VerboseMode)
-                Log.Debug("Posted to Discord webhook successfully!");
+                Log.Debug($"Posted to Discord webhook regarding {player.UserId}'s ({player.IPAddress}) kick successfully!");
 
             return true;
+        }
+
+        private static string StripRichText(string input)
+        {
+            return Regex.Replace(input, "<.*?>", string.Empty);
         }
     }
 }
