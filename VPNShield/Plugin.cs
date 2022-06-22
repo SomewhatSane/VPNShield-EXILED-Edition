@@ -19,16 +19,16 @@ namespace VPNShield
         public override string Name { get; } = "VPNShield EXILED Edition";
         public override string Author { get; } = "SomewhatSane";
         public override string Prefix { get; } = "vs";
-        public override Version RequiredExiledVersion { get; } = new Version("5.0.0");
+        public override Version RequiredExiledVersion { get; } = new Version("5.2.1");
 
         public static readonly string exiledPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EXILED", "Plugins");
 
         public static readonly string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-        internal const string lastModifed = "2022/05/01 10:22 UTC";
+        internal const string lastModifed = "2022/06/22 16:42 UTC";
 
 
         public override void OnEnabled()
-        { 
+        {
             Log.Info($"{Name} v{version} by {Author}. Last modified: {lastModifed}.");
 
             Log.Info("Loading base scripts.");
@@ -48,7 +48,6 @@ namespace VPNShield
             PlayerEvents.PreAuthenticating += EventHandlers.PreAuthenticating;
             PlayerEvents.Verified += EventHandlers.Verified;
             ServerEvents.WaitingForPlayers += EventHandlers.WaitingForPlayers;
-            ServerEvents.RoundEnded += EventHandlers.RoundEnded;
 
             Log.Info("Done.");
         }
@@ -60,7 +59,6 @@ namespace VPNShield
             PlayerEvents.PreAuthenticating -= EventHandlers.PreAuthenticating;
             PlayerEvents.Verified -= EventHandlers.Verified;
             ServerEvents.WaitingForPlayers -= EventHandlers.WaitingForPlayers;
-            ServerEvents.RoundEnded -= EventHandlers.RoundEnded;
 
             EventHandlers = null;
             Account = null;

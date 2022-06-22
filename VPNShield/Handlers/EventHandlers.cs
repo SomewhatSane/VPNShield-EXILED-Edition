@@ -126,6 +126,14 @@ namespace VPNShield.Handlers
 
             if (ToKick.ContainsKey(ev.Player.UserId))
             {
+                //Send message to webhook if enabled.
+                if (plugin.Config.SendToDiscordWebhook)
+                {
+                    VPNShieldIP ipAddressObj = DbManager.GetIP(ev.Player.IPAddress);
+                    _ = plugin.WebhookHandler.SendWebhook(plugin.Config.SendToDiscordWebhookUrl, ev.Player, ToKick[ev.Player.UserId], ipAddressObj);
+                }
+                    
+
                 switch (ToKick[ev.Player.UserId])
                 {
                     case KickReason.None:
@@ -146,10 +154,6 @@ namespace VPNShield.Handlers
                         ServerConsole.Disconnect(ev.Player.Connection, plugin.Config.VpnCheckKickMessage);
                         break;
                 }
-
-                //Send message to webhook if enabled.
-                if (plugin.Config.SendToDiscordWebhook)
-                    _ = plugin.WebhookHandler.SendWebhook(plugin.Config.SendToDiscordWebhookUrl, ev.Player, ToKick[ev.Player.UserId]);
 
                 ToKick.Remove(ev.Player.UserId);
             }
@@ -188,11 +192,12 @@ namespace VPNShield.Handlers
                         Player player = Player.Get(ev.UserId);
                         if (player != null)
                         {
-                            ServerConsole.Disconnect(player.Connection, kickMessage);
-
                             //Send message to webhook if enabled.
                             if (plugin.Config.SendToDiscordWebhook)
                                 _ = plugin.WebhookHandler.SendWebhook(plugin.Config.SendToDiscordWebhookUrl, player, kickReason);
+                                
+
+                            ServerConsole.Disconnect(player.Connection, kickMessage);
                         }
 
                         else
@@ -236,14 +241,16 @@ namespace VPNShield.Handlers
                         Player player = Player.Get(ev.UserId);
                         if (player != null)
                         {
-                            ServerConsole.Disconnect(player.Connection, kickMessage);
-
                             //Send message to webhook if enabled.
                             if (plugin.Config.SendToDiscordWebhook)
                                 _ = plugin.WebhookHandler.SendWebhook(plugin.Config.SendToDiscordWebhookUrl, player, kickReason);
+
+                            ServerConsole.Disconnect(player.Connection, kickMessage);
                         }
                         else
                             ToKick.Add(ev.UserId, kickReason);
+
+                        return;
                     }
                 }
 
@@ -284,15 +291,21 @@ namespace VPNShield.Handlers
                     Player player = Player.Get(ev.UserId);
                     if (player != null)
                     {
-                        ServerConsole.Disconnect(player.Connection, plugin.Config.VpnCheckKickMessage);
-
                         //Send a message to webhook if enabled.
                         if (plugin.Config.SendToDiscordWebhook)
-                            _ = plugin.WebhookHandler.SendWebhook(plugin.Config.SendToDiscordWebhookUrl, player, KickReason.VPN, null);
+                        {
+                            VPNShieldIP ipAddressObj = DbManager.GetIP(ev.Request.RemoteEndPoint.Address.ToString());
+                            _ = plugin.WebhookHandler.SendWebhook(plugin.Config.SendToDiscordWebhookUrl, player, KickReason.VPN, ipAddressObj);
+                        }
+                            
+
+                        ServerConsole.Disconnect(player.Connection, plugin.Config.VpnCheckKickMessage);
                     }
 
                     else
                         ToKick.Add(ev.UserId, KickReason.VPN);
+
+                    return;
                 }
 
             }
@@ -300,16 +313,13 @@ namespace VPNShield.Handlers
             //All checks have passed. Player can play.
         }
 
-        public void RoundEnded(RoundEndedEventArgs _)
+        public void WaitingForPlayers()
         {
             ToKick.Clear();
 
             if (plugin.Config.VerboseMode)
                 Log.Debug("Cleared ToKick dictionary.");
-        }
 
-        public void WaitingForPlayers()
-        {
             Filesystem.CheckFileSystem();
 
             Log.Info("This server is protected by VPNShield.");

@@ -284,17 +284,17 @@ namespace VPNShield
                                     new
                                     {
                                         name = "GII Score",
-                                        value = checkResponse.GiiScore
+                                        value = checkResponse.GiiScore.ToString()
                                     },
                                     new
                                     {
                                         name = "Mobile ISP? (-1 if unknown)",
-                                        value = checkResponse.GiiMobile
+                                        value = checkResponse.GiiMobile.ToString()
                                     },
                                     new
                                     {
                                         name = "GII checked at",
-                                        value = new DateTime(checkResponse.CheckedAt)
+                                        value = new DateTime(checkResponse.CheckedAt).ToString()
                                     },
                                     new
                                     {
@@ -310,7 +310,6 @@ namespace VPNShield
                     }
                     
                     break;
-
                 case KickReason.None:
                     webhookData = new
                     {

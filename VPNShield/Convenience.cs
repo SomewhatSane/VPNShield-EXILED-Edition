@@ -117,7 +117,7 @@ namespace VPNShield
 
         public static bool CheckIfCIDR(string cidrString)
         {
-            //Only works for IPv4. (Fine atm as SCPSL only supports IPv4 but this should be updated later down the line.
+            //Only works for IPv4. (Fine atm as SCPSL only supports IPv4 but this should be updated later down the line.)
             string[] segments = cidrString.Split('/');
 
             if (segments.Length != 2)
